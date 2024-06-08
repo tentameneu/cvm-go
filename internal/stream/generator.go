@@ -8,14 +8,14 @@ type StreamGenerator interface {
 	Generate() []int
 }
 
-type RepeatingStreamGenerator struct {
+type repeatingStreamGenerator struct {
 	total    int
 	distinct int
 }
 
 var invalidParamType error
 
-func (repeating *RepeatingStreamGenerator) Generate() []int {
+func (repeating *repeatingStreamGenerator) Generate() []int {
 	stream := make([]int, repeating.total)
 	for i := 0; i < repeating.total; i++ {
 		stream[i] = i % repeating.distinct
@@ -40,7 +40,7 @@ func NewStreamGenerator(genType string, args map[string]interface{}) (StreamGene
 			return nil, invalidParamType
 		}
 
-		return &RepeatingStreamGenerator{total: total, distinct: distinct}, nil
+		return &repeatingStreamGenerator{total: total, distinct: distinct}, nil
 
 	default:
 		return nil, fmt.Errorf("unknown generator type '%s'", genType)
