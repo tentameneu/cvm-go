@@ -1,4 +1,4 @@
-package main
+package cvm
 
 import (
 	"fmt"
@@ -113,7 +113,7 @@ func BenchmarkInsert(b *testing.B) {
 	lengths := []int{1_000, 10_000, 100_000, 1_000_000}
 	for _, length := range lengths {
 		b.Run(fmt.Sprintf("%d", length), func(b *testing.B) {
-			stream := generateRepeatingStream(length, length)
+			stream := GenerateRepeatingStream(length, length)
 			buffer := newTreapBuffer(length)
 			b.ResetTimer()
 			for _, element := range stream {
@@ -200,7 +200,7 @@ func BenchmarkInsertOverwrite(b *testing.B) {
 	lengths := []int{1_000, 10_000, 100_000, 1_000_000}
 	for _, length := range lengths {
 		b.Run(fmt.Sprintf("%d", length), func(b *testing.B) {
-			stream := generateRepeatingStream(length, length/100)
+			stream := GenerateRepeatingStream(length, length/100)
 			buffer := newTreapBuffer(length)
 			for i := 0; i < length/100; i++ {
 				buffer.insert(newNode(stream[i], rand.Float64()))
@@ -309,7 +309,7 @@ func BenchmarkContains(b *testing.B) {
 	lengths := []int{1_000, 10_000, 100_000, 1_000_000}
 	for _, length := range lengths {
 		b.Run(fmt.Sprintf("%d", length), func(b *testing.B) {
-			stream := generateRepeatingStream(length, length-1)
+			stream := GenerateRepeatingStream(length, length-1)
 			buffer := newTreapBuffer(length)
 			for i := 0; i < length; i++ {
 				buffer.insert(newNode(stream[i], rand.Float64()))
