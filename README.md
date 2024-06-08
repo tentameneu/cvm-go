@@ -10,7 +10,7 @@ Build application using bash script in ```scripts/``` directory with:
 scripts/build.sh
 ```
 
-This will created ```cmd/cvm-go/cvm-go``` executable binary file.
+This will create ```cmd/cvm-go/cvm-go``` executable binary file.
 
 ## Run
 
