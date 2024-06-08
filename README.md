@@ -19,3 +19,15 @@ Run application by running compiled binary with:
 ```bash
 cmd/cvm-go/cvm-go
 ```
+
+## Testing
+
+Running specific or all tests is easily available through VS Code editor in `Testing` tab.
+
+To run all unit tests with coverage profiling, use script:
+
+```bash
+scripts/run_coverage.sh
+```
+
+Script above will try to automatically open coverage HTML report in your default browser.
