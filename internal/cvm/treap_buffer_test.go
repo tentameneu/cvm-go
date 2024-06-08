@@ -6,7 +6,17 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/tentameneu/cvm-go/internal/stream"
 )
+
+func newTestRepeatingStream(total, distinct int) []int {
+	generatorArgs := map[string]interface{}{
+		"total":    total,
+		"distinct": distinct,
+	}
+	streamgenerator, _ := stream.NewStreamGenerator("repeating", generatorArgs)
+	return streamgenerator.Generate()
+}
 
 func TestNew(t *testing.T) {
 	t.Run("TreapBuffer", func(t *testing.T) {
@@ -113,7 +123,7 @@ func BenchmarkInsert(b *testing.B) {
 	lengths := []int{1_000, 10_000, 100_000, 1_000_000}
 	for _, length := range lengths {
 		b.Run(fmt.Sprintf("%d", length), func(b *testing.B) {
-			stream := GenerateRepeatingStream(length, length)
+			stream := newTestRepeatingStream(length, length)
 			buffer := newTreapBuffer(length)
 			b.ResetTimer()
 			for _, element := range stream {
@@ -200,7 +210,7 @@ func BenchmarkInsertOverwrite(b *testing.B) {
 	lengths := []int{1_000, 10_000, 100_000, 1_000_000}
 	for _, length := range lengths {
 		b.Run(fmt.Sprintf("%d", length), func(b *testing.B) {
-			stream := GenerateRepeatingStream(length, length/100)
+			stream := newTestRepeatingStream(length, length/100)
 			buffer := newTreapBuffer(length)
 			for i := 0; i < length/100; i++ {
 				buffer.insert(newNode(stream[i], rand.Float64()))
@@ -309,7 +319,7 @@ func BenchmarkContains(b *testing.B) {
 	lengths := []int{1_000, 10_000, 100_000, 1_000_000}
 	for _, length := range lengths {
 		b.Run(fmt.Sprintf("%d", length), func(b *testing.B) {
-			stream := GenerateRepeatingStream(length, length-1)
+			stream := newTestRepeatingStream(length, length-1)
 			buffer := newTreapBuffer(length)
 			for i := 0; i < length; i++ {
 				buffer.insert(newNode(stream[i], rand.Float64()))

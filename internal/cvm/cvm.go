@@ -40,11 +40,3 @@ func (runner *CVMRunner) Run() int {
 	}
 	return int(float64(runner.buffer.currentSize) / p)
 }
-
-func GenerateRepeatingStream(total, distinct int) []int {
-	stream := make([]int, total)
-	for i := 0; i < total; i++ {
-		stream[i] = i % distinct
-	}
-	return stream
-}
