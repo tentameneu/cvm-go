@@ -6,15 +6,17 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/tentameneu/cvm-go/internal/config"
 	"github.com/tentameneu/cvm-go/internal/stream"
 )
 
 func newTestRepeatingStream(total, distinct int) []int {
-	generatorArgs := map[string]interface{}{
+	conf, _ := config.NewConfig(map[string]any{
+		"genType":  "repeating",
 		"total":    total,
 		"distinct": distinct,
-	}
-	streamgenerator, _ := stream.NewStreamGenerator("repeating", generatorArgs)
+	})
+	streamgenerator, _ := stream.NewStreamGenerator(conf)
 	return streamgenerator.Generate()
 }
 

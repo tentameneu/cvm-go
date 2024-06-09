@@ -2,6 +2,8 @@ package stream
 
 import (
 	"fmt"
+
+	"github.com/tentameneu/cvm-go/internal/config"
 )
 
 type StreamGenerator interface {
@@ -13,8 +15,6 @@ type repeatingStreamGenerator struct {
 	distinct int
 }
 
-var invalidParamType error
-
 func (repeating *repeatingStreamGenerator) Generate() []int {
 	stream := make([]int, repeating.total)
 	for i := 0; i < repeating.total; i++ {
@@ -23,37 +23,11 @@ func (repeating *repeatingStreamGenerator) Generate() []int {
 	return stream
 }
 
-func NewStreamGenerator(genType string, args map[string]interface{}) (StreamGenerator, error) {
-	switch genType {
+func NewStreamGenerator(conf *config.Config) (StreamGenerator, error) {
+	switch conf.GetGenType() {
 	case "repeating":
-		if err := verifyGeneratorArgs(args, "total", "distinct"); err != nil {
-			return nil, err
-		}
-
-		total, ok := args["total"].(int)
-		if !ok {
-			return nil, invalidParamType
-		}
-
-		distinct, ok := args["distinct"].(int)
-		if !ok {
-			return nil, invalidParamType
-		}
-
-		return &repeatingStreamGenerator{total: total, distinct: distinct}, nil
-
+		return &repeatingStreamGenerator{total: conf.GetTotal(), distinct: conf.GetDistinct()}, nil
 	default:
-		return nil, fmt.Errorf("unknown generator type '%s'", genType)
+		return nil, fmt.Errorf("unknown generator type '%s'", conf.GetGenType())
 	}
-}
-
-func verifyGeneratorArgs(args map[string]interface{}, required ...string) error {
-	for _, requiredParam := range required {
-		_, ok := args[requiredParam]
-
-		if !ok {
-			return fmt.Errorf("argument '%s' missing", requiredParam)
-		}
-	}
-	return nil
 }
