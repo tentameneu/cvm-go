@@ -2,21 +2,17 @@ package main
 
 import (
 	"fmt"
+	"os"
 
-	"github.com/tentameneu/cvm-go/internal/cvm"
-	"github.com/tentameneu/cvm-go/internal/stream"
+	"github.com/tentameneu/cvm-go/internal/cli"
 )
 
 func main() {
-	generatorArgs := map[string]interface{}{
-		"total":    100000000,
-		"distinct": 5000000,
+	runner, err := cli.Parse()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err.Error())
+		os.Exit(3)
 	}
-	streamGenerator, _ := stream.NewStreamGenerator("repeating", generatorArgs)
-	runner := cvm.NewCVMRunner(
-		streamGenerator.Generate(),
-		10000,
-	)
 	n := runner.Run()
 	runner.PrintBufferBasicInfo()
 	fmt.Printf("Estimated number of distinct elements: %d\n", n)
