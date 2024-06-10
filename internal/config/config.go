@@ -1,5 +1,7 @@
 package config
 
+import "fmt"
+
 type Config struct {
 	genType    string
 	total      int
@@ -7,27 +9,37 @@ type Config struct {
 	bufferSize int
 }
 
-var InvalidParameterTypeError error
+type ValidationError struct {
+	param string
+}
+
+func newValidationError(param string) ValidationError {
+	return ValidationError{param: param}
+}
+
+func (ve ValidationError) Error() string {
+	return fmt.Sprintf("parameter '%s' is not valid type", ve.param)
+}
 
 func NewConfig(params map[string]any) (*Config, error) {
 	genType, ok := params["genType"].(string)
 	if !ok {
-		return nil, InvalidParameterTypeError
+		return nil, newValidationError("genType")
 	}
 
 	total, ok := params["total"].(int)
 	if !ok {
-		return nil, InvalidParameterTypeError
+		return nil, newValidationError("total")
 	}
 
 	distinct, ok := params["distinct"].(int)
 	if !ok {
-		return nil, InvalidParameterTypeError
+		return nil, newValidationError("distinct")
 	}
 
 	bufferSize, ok := params["bufferSize"].(int)
 	if !ok {
-		return nil, InvalidParameterTypeError
+		return nil, newValidationError("bufferSize")
 	}
 
 	conf := &Config{
