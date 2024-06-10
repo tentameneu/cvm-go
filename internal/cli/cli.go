@@ -31,9 +31,6 @@ func Parse() (*cvm.CVMRunner, error) {
 }
 
 func processArgs() (*cvm.CVMRunner, error) {
-	if *total < *distinct {
-		printAndExit("Total number of elements can't be smaller than distinct number of elements!")
-	}
 	switch *genType {
 	case "repeating":
 		conf, err := config.NewConfig(generateConfigParams())
@@ -71,9 +68,4 @@ Supported arguments:
 
 `)
 	flag.PrintDefaults()
-}
-
-func printAndExit(text string) {
-	fmt.Fprintln(os.Stderr, text)
-	os.Exit(2)
 }

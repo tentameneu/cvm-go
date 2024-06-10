@@ -43,6 +43,22 @@ func NewConfig(params map[string]any) (*Config, error) {
 		return nil, newValidationError("bufferSize", "must be an integer")
 	}
 
+	if total <= 0 {
+		return nil, newValidationError("total", "must be a positive integer")
+	}
+
+	if distinct <= 0 {
+		return nil, newValidationError("distinct", "must be a positive integer")
+	}
+
+	if bufferSize <= 0 {
+		return nil, newValidationError("bufferSize", "must be a positive integer")
+	}
+
+	if total < distinct {
+		return nil, newValidationError("total < distinct", "total number of elements can't be smaller than distinct number of elements")
+	}
+
 	conf := &Config{
 		genType:    genType,
 		total:      total,
