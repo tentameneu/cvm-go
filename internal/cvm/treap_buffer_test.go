@@ -12,9 +12,10 @@ import (
 
 func newTestRepeatingStream(total, distinct int) []int {
 	conf, _ := config.NewConfig(map[string]any{
-		"genType":  "repeating",
-		"total":    total,
-		"distinct": distinct,
+		"genType":    "repeating",
+		"total":      total,
+		"distinct":   distinct,
+		"bufferSize": total,
 	})
 	streamgenerator, _ := stream.NewStreamGenerator(conf)
 	return streamgenerator.Generate()
