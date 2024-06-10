@@ -1,6 +1,9 @@
 package cvm
 
-import "math/rand"
+import (
+	"io"
+	"math/rand"
+)
 
 type CVMRunner struct {
 	stream []int
@@ -14,8 +17,8 @@ func NewCVMRunner(stream []int, bufferSize int) *CVMRunner {
 	}
 }
 
-func (runner *CVMRunner) PrintBufferBasicInfo() {
-	runner.buffer.printBasicInfo()
+func (runner *CVMRunner) PrintBufferBasicInfo(writer io.Writer) {
+	runner.buffer.printBasicInfo(writer)
 }
 
 func (runner *CVMRunner) Run() int {

@@ -1,6 +1,7 @@
 package cvm
 
 import (
+	"bytes"
 	"fmt"
 	"math/rand"
 	"testing"
@@ -333,4 +334,29 @@ func BenchmarkContains(b *testing.B) {
 			}
 		})
 	}
+}
+
+func TestPrintBasicInfo(t *testing.T) {
+	t.Run("Empty", func(t *testing.T) {
+		buffer := newTreapBuffer(1)
+		writerBuffer := new(bytes.Buffer)
+		buffer.printBasicInfo(writerBuffer)
+
+		expectedOutput := `Size: 0
+Root: <nil>
+`
+		assert.Equal(t, expectedOutput, writerBuffer.String())
+	})
+
+	t.Run("SingleNode", func(t *testing.T) {
+		buffer := newTreapBuffer(1)
+		buffer.insert(newNode(30, 0.200))
+		writerBuffer := new(bytes.Buffer)
+		buffer.printBasicInfo(writerBuffer)
+
+		expectedOutput := `Size: 1
+Root: <Value: 30, Priority: 0.200000>
+`
+		assert.Equal(t, expectedOutput, writerBuffer.String())
+	})
 }

@@ -14,6 +14,6 @@ func main() {
 		os.Exit(3)
 	}
 	n := runner.Run()
-	runner.PrintBufferBasicInfo()
+	runner.PrintBufferBasicInfo(os.Stdout)
 	fmt.Printf("Estimated number of distinct elements: %d\n", n)
 }

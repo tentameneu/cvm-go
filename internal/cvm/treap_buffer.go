@@ -1,6 +1,9 @@
 package cvm
 
-import "fmt"
+import (
+	"fmt"
+	"io"
+)
 
 type treapBuffer struct {
 	root        *node
@@ -136,10 +139,14 @@ func (tb *treapBuffer) contains(value int) bool {
 	return false
 }
 
-func (tb *treapBuffer) printBasicInfo() {
-	fmt.Printf("Size: %d\n", tb.currentSize)
-	fmt.Printf("Root: ")
-	printNode(tb.root)
+func (tb *treapBuffer) printBasicInfo(writer io.Writer) {
+	fmt.Fprintf(writer, "Size: %d\n", tb.currentSize)
+	fmt.Fprint(writer, "Root: ")
+	if tb.root != nil {
+		printNode(writer, tb.root)
+	} else {
+		fmt.Fprintln(writer, tb.root)
+	}
 }
 
 // func (tb *treapBuffer) printDetails() {
@@ -157,6 +164,6 @@ func (tb *treapBuffer) printBasicInfo() {
 // 	}
 // }
 
-func printNode(node *node) {
-	fmt.Printf("<Value: %d, Priority: %f>\n", node.value, node.priority)
+func printNode(writer io.Writer, node *node) {
+	fmt.Fprintf(writer, "<Value: %d, Priority: %f>\n", node.value, node.priority)
 }
