@@ -11,9 +11,9 @@ import (
 )
 
 var genType = flag.String("gen-type", "repeating", "how to generate test stream of elements. valid values are: [repeating]")
-var total = flag.Int("total", 100000000, "total number of elements in generated test stream")
-var distinct = flag.Int("distinct", 5000000, "number of distincts elements in generated test stream")
-var bufferSize = flag.Int("buffer-size", 10000, "number of elements that can be stored in buffer while processing stream")
+var total = flag.Int("total", 100_000_000, "total number of elements in generated test stream")
+var distinct = flag.Int("distinct", 5_000_000, "number of distincts elements in generated test stream")
+var bufferSize = flag.Int("buffer-size", 10_000, "number of elements that can be stored in buffer while processing stream")
 
 var generateConfigParams = func() map[string]any {
 	return map[string]any{
