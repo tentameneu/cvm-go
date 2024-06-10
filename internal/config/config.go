@@ -11,35 +11,36 @@ type Config struct {
 
 type ValidationError struct {
 	param string
+	msg   string
 }
 
-func newValidationError(param string) ValidationError {
-	return ValidationError{param: param}
+func newValidationError(param, msg string) ValidationError {
+	return ValidationError{param: param, msg: msg}
 }
 
 func (ve ValidationError) Error() string {
-	return fmt.Sprintf("parameter '%s' is not valid type", ve.param)
+	return fmt.Sprintf("invalid parameter '%s': %s", ve.param, ve.msg)
 }
 
 func NewConfig(params map[string]any) (*Config, error) {
 	genType, ok := params["genType"].(string)
 	if !ok {
-		return nil, newValidationError("genType")
+		return nil, newValidationError("genType", "must be a string")
 	}
 
 	total, ok := params["total"].(int)
 	if !ok {
-		return nil, newValidationError("total")
+		return nil, newValidationError("total", "must be an integer")
 	}
 
 	distinct, ok := params["distinct"].(int)
 	if !ok {
-		return nil, newValidationError("distinct")
+		return nil, newValidationError("distinct", "must be an integer")
 	}
 
 	bufferSize, ok := params["bufferSize"].(int)
 	if !ok {
-		return nil, newValidationError("bufferSize")
+		return nil, newValidationError("bufferSize", "must be an integer")
 	}
 
 	conf := &Config{

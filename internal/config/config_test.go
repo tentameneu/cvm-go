@@ -31,7 +31,7 @@ func TestNewConfig(t *testing.T) {
 		})
 
 		assert.Nil(t, conf)
-		assert.EqualError(t, err, "parameter 'genType' is not valid type")
+		assert.EqualError(t, err, "invalid parameter 'genType': must be a string")
 	})
 
 	t.Run("InvalidTotal", func(t *testing.T) {
@@ -43,7 +43,7 @@ func TestNewConfig(t *testing.T) {
 		})
 
 		assert.Nil(t, conf)
-		assert.EqualError(t, err, "parameter 'total' is not valid type")
+		assert.EqualError(t, err, "invalid parameter 'total': must be an integer")
 	})
 
 	t.Run("InvalidDistinct", func(t *testing.T) {
@@ -55,7 +55,7 @@ func TestNewConfig(t *testing.T) {
 		})
 
 		assert.Nil(t, conf)
-		assert.EqualError(t, err, "parameter 'distinct' is not valid type")
+		assert.EqualError(t, err, "invalid parameter 'distinct': must be an integer")
 	})
 
 	t.Run("InvalidBufferSize", func(t *testing.T) {
@@ -67,7 +67,7 @@ func TestNewConfig(t *testing.T) {
 		})
 
 		assert.Nil(t, conf)
-		assert.EqualError(t, err, "parameter 'bufferSize' is not valid type")
+		assert.EqualError(t, err, "invalid parameter 'bufferSize': must be an integer")
 	})
 }
 
