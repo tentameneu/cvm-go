@@ -25,7 +25,7 @@ func (ve ValidationError) Error() string {
 func NewConfig(params map[string]any) (*Config, error) {
 	genType, ok := params["genType"].(string)
 	if !ok {
-		return nil, newValidationError("genType", "must be a string")
+		return nil, newValidationError("gen-type", "must be a string")
 	}
 
 	total, ok := params["total"].(int)

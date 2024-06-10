@@ -31,7 +31,7 @@ func TestNewConfig(t *testing.T) {
 		})
 
 		assert.Nil(t, conf)
-		assert.EqualError(t, err, "invalid parameter 'genType': must be a string")
+		assert.EqualError(t, err, "invalid parameter 'gen-type': must be a string")
 	})
 
 	t.Run("InvalidTotal", func(t *testing.T) {

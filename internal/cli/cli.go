@@ -31,15 +31,16 @@ func Parse() (*cvm.CVMRunner, error) {
 }
 
 func processArgs() (*cvm.CVMRunner, error) {
-	switch *genType {
+	conf, err := config.NewConfig(generateConfigParams())
+	if err != nil {
+		return nil, err
+	}
+
+	switch conf.GetGenType() {
 	case "repeating":
-		conf, err := config.NewConfig(generateConfigParams())
-		if err != nil {
-			return nil, err
-		}
 		return createRepeatingStreamRunner(conf)
 	default:
-		fmt.Fprintf(os.Stderr, "Unknown stream generator type '%s'\n\n", *genType)
+		fmt.Fprintf(os.Stderr, "Unknown stream generator type '%s'\n\n", conf.GetGenType())
 		flag.PrintDefaults()
 		os.Exit(1)
 		return nil, nil
