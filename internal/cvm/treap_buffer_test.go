@@ -13,7 +13,7 @@ import (
 
 func newTestIncrementalStream(total, distinct int) []int {
 	conf, _ := config.NewConfig(map[string]any{
-		"genType":    "incremental",
+		"streamType": "incremental",
 		"total":      total,
 		"distinct":   distinct,
 		"bufferSize": total,

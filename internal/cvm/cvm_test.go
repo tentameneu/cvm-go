@@ -16,7 +16,7 @@ func newTestStreamRunner(conf *config.Config) *CVMRunner {
 func TestRun(t *testing.T) {
 	t.Run("SmallerBuffer", func(t *testing.T) {
 		conf, _ := config.NewConfig(map[string]any{
-			"genType":    "incremental",
+			"streamType": "incremental",
 			"total":      1_000_000,
 			"distinct":   10_000,
 			"bufferSize": 1_000,
@@ -28,7 +28,7 @@ func TestRun(t *testing.T) {
 
 	t.Run("ExactBuffer", func(t *testing.T) {
 		conf, _ := config.NewConfig(map[string]any{
-			"genType":    "incremental",
+			"streamType": "incremental",
 			"total":      1_000_000,
 			"distinct":   10_000,
 			"bufferSize": 10_000,

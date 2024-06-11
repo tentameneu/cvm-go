@@ -9,14 +9,14 @@ import (
 func TestNewConfig(t *testing.T) {
 	t.Run("ValidIncremental", func(t *testing.T) {
 		conf, err := NewConfig(map[string]any{
-			"genType":    "incremental",
+			"streamType": "incremental",
 			"total":      100,
 			"distinct":   50,
 			"bufferSize": 10,
 		})
 
 		assert.Nil(t, err)
-		assert.Equal(t, "incremental", conf.genType)
+		assert.Equal(t, "incremental", conf.streamType)
 		assert.Equal(t, 100, conf.total)
 		assert.Equal(t, 50, conf.distinct)
 		assert.Equal(t, 10, conf.bufferSize)
@@ -24,7 +24,7 @@ func TestNewConfig(t *testing.T) {
 
 	t.Run("ValidRandom", func(t *testing.T) {
 		conf, err := NewConfig(map[string]any{
-			"genType":    "random",
+			"streamType": "random",
 			"total":      100,
 			"distinct":   50,
 			"randomMin":  0,
@@ -33,7 +33,7 @@ func TestNewConfig(t *testing.T) {
 		})
 
 		assert.Nil(t, err)
-		assert.Equal(t, "random", conf.genType)
+		assert.Equal(t, "random", conf.streamType)
 		assert.Equal(t, 100, conf.total)
 		assert.Equal(t, 50, conf.distinct)
 		assert.Equal(t, 0, conf.randomMin)
@@ -41,21 +41,21 @@ func TestNewConfig(t *testing.T) {
 		assert.Equal(t, 10, conf.bufferSize)
 	})
 
-	t.Run("InvalidGenType", func(t *testing.T) {
+	t.Run("InvalidStreamType", func(t *testing.T) {
 		conf, err := NewConfig(map[string]any{
-			"genType":    12345,
+			"streamType": 12345,
 			"total":      100,
 			"distinct":   50,
 			"bufferSize": 10,
 		})
 
 		assert.Nil(t, conf)
-		assert.EqualError(t, err, "invalid parameter 'gen-type': must be a string")
+		assert.EqualError(t, err, "invalid parameter 'stream-type': must be a string")
 	})
 
 	t.Run("InvalidTotal", func(t *testing.T) {
 		conf, err := NewConfig(map[string]any{
-			"genType":    "incremental",
+			"streamType": "incremental",
 			"total":      "100",
 			"distinct":   50,
 			"bufferSize": 10,
@@ -67,7 +67,7 @@ func TestNewConfig(t *testing.T) {
 
 	t.Run("InvalidDistinct", func(t *testing.T) {
 		conf, err := NewConfig(map[string]any{
-			"genType":    "incremental",
+			"streamType": "incremental",
 			"total":      100,
 			"distinct":   "50",
 			"bufferSize": 10,
@@ -79,7 +79,7 @@ func TestNewConfig(t *testing.T) {
 
 	t.Run("InvalidBufferSize", func(t *testing.T) {
 		conf, err := NewConfig(map[string]any{
-			"genType":    "incremental",
+			"streamType": "incremental",
 			"total":      100,
 			"distinct":   50,
 			"bufferSize": "10",
@@ -91,7 +91,7 @@ func TestNewConfig(t *testing.T) {
 
 	t.Run("NegativeTotal", func(t *testing.T) {
 		conf, err := NewConfig(map[string]any{
-			"genType":    "incremental",
+			"streamType": "incremental",
 			"total":      -100,
 			"distinct":   50,
 			"bufferSize": 10,
@@ -103,7 +103,7 @@ func TestNewConfig(t *testing.T) {
 
 	t.Run("NegativeDistinct", func(t *testing.T) {
 		conf, err := NewConfig(map[string]any{
-			"genType":    "incremental",
+			"streamType": "incremental",
 			"total":      100,
 			"distinct":   -50,
 			"bufferSize": 10,
@@ -115,7 +115,7 @@ func TestNewConfig(t *testing.T) {
 
 	t.Run("NegativeBufferSize", func(t *testing.T) {
 		conf, err := NewConfig(map[string]any{
-			"genType":    "incremental",
+			"streamType": "incremental",
 			"total":      100,
 			"distinct":   50,
 			"bufferSize": -10,
@@ -127,7 +127,7 @@ func TestNewConfig(t *testing.T) {
 
 	t.Run("Total<Distinct", func(t *testing.T) {
 		conf, err := NewConfig(map[string]any{
-			"genType":    "incremental",
+			"streamType": "incremental",
 			"total":      100,
 			"distinct":   500,
 			"bufferSize": 10,
@@ -139,7 +139,7 @@ func TestNewConfig(t *testing.T) {
 
 	t.Run("InvalidRandomMin", func(t *testing.T) {
 		conf, err := NewConfig(map[string]any{
-			"genType":    "random",
+			"streamType": "random",
 			"total":      100,
 			"distinct":   50,
 			"randomMin":  "100",
@@ -153,7 +153,7 @@ func TestNewConfig(t *testing.T) {
 
 	t.Run("InvalidRandomMax", func(t *testing.T) {
 		conf, err := NewConfig(map[string]any{
-			"genType":    "random",
+			"streamType": "random",
 			"total":      100,
 			"distinct":   50,
 			"randomMin":  100,
@@ -167,7 +167,7 @@ func TestNewConfig(t *testing.T) {
 
 	t.Run("NegativeRandomMin", func(t *testing.T) {
 		conf, err := NewConfig(map[string]any{
-			"genType":    "random",
+			"streamType": "random",
 			"total":      100,
 			"distinct":   50,
 			"randomMin":  -100,
@@ -181,7 +181,7 @@ func TestNewConfig(t *testing.T) {
 
 	t.Run("NegativeRandomMax", func(t *testing.T) {
 		conf, err := NewConfig(map[string]any{
-			"genType":    "random",
+			"streamType": "random",
 			"total":      100,
 			"distinct":   50,
 			"randomMin":  100,
@@ -195,7 +195,7 @@ func TestNewConfig(t *testing.T) {
 
 	t.Run("RandomMax<RandomMin", func(t *testing.T) {
 		conf, err := NewConfig(map[string]any{
-			"genType":    "random",
+			"streamType": "random",
 			"total":      100,
 			"distinct":   50,
 			"randomMin":  1_000_000,
@@ -209,7 +209,7 @@ func TestNewConfig(t *testing.T) {
 
 	t.Run("RandomMax+RandomMin<Distinct", func(t *testing.T) {
 		conf, err := NewConfig(map[string]any{
-			"genType":    "random",
+			"streamType": "random",
 			"total":      1_000,
 			"distinct":   500,
 			"randomMin":  10,
@@ -224,14 +224,14 @@ func TestNewConfig(t *testing.T) {
 
 func TestConfigGetters(t *testing.T) {
 	conf, err := NewConfig(map[string]any{
-		"genType":    "incremental",
+		"streamType": "incremental",
 		"total":      100,
 		"distinct":   50,
 		"bufferSize": 10,
 	})
 
 	assert.Nil(t, err)
-	assert.Equal(t, "incremental", conf.GetGenType())
+	assert.Equal(t, "incremental", conf.GetStreamType())
 	assert.Equal(t, 100, conf.GetTotal())
 	assert.Equal(t, 50, conf.GetDistinct())
 	assert.Equal(t, 10, conf.GetBufferSize())

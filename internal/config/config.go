@@ -3,7 +3,7 @@ package config
 import "fmt"
 
 type Config struct {
-	genType    string
+	streamType string
 	total      int
 	distinct   int
 	randomMin  int
@@ -25,9 +25,9 @@ func (ve ValidationError) Error() string {
 }
 
 func NewConfig(params map[string]any) (*Config, error) {
-	genType, ok := params["genType"].(string)
+	streamType, ok := params["streamType"].(string)
 	if !ok {
-		return nil, newValidationError("gen-type", "must be a string")
+		return nil, newValidationError("stream-type", "must be a string")
 	}
 
 	total, ok := params["total"].(int)
@@ -61,7 +61,7 @@ func NewConfig(params map[string]any) (*Config, error) {
 		return nil, newValidationError("total < distinct", "total number of elements can't be smaller than distinct number of elements")
 	}
 
-	if genType == "random" {
+	if streamType == "random" {
 		randomMin, ok := params["randomMin"].(int)
 		if !ok {
 			return nil, newValidationError("random-min", "must be an integer")
@@ -89,7 +89,7 @@ func NewConfig(params map[string]any) (*Config, error) {
 		}
 
 		conf := &Config{
-			genType:    genType,
+			streamType: streamType,
 			total:      total,
 			distinct:   distinct,
 			randomMin:  randomMin,
@@ -101,7 +101,7 @@ func NewConfig(params map[string]any) (*Config, error) {
 	}
 
 	conf := &Config{
-		genType:    genType,
+		streamType: streamType,
 		total:      total,
 		distinct:   distinct,
 		bufferSize: bufferSize,
@@ -110,8 +110,8 @@ func NewConfig(params map[string]any) (*Config, error) {
 	return conf, nil
 }
 
-func (conf *Config) GetGenType() string {
-	return conf.genType
+func (conf *Config) GetStreamType() string {
+	return conf.streamType
 }
 
 func (conf *Config) GetTotal() int {

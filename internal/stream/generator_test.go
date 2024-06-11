@@ -10,7 +10,7 @@ import (
 func TestNewStreamGenerator(t *testing.T) {
 	t.Run("incremental", func(t *testing.T) {
 		conf, _ := config.NewConfig(map[string]any{
-			"genType":    "incremental",
+			"streamType": "incremental",
 			"total":      100,
 			"distinct":   10,
 			"bufferSize": 100,
@@ -24,7 +24,7 @@ func TestNewStreamGenerator(t *testing.T) {
 
 	t.Run("Random", func(t *testing.T) {
 		conf, _ := config.NewConfig(map[string]any{
-			"genType":    "random",
+			"streamType": "random",
 			"total":      100,
 			"distinct":   10,
 			"randomMin":  100,
@@ -40,7 +40,7 @@ func TestNewStreamGenerator(t *testing.T) {
 
 	t.Run("Unknown", func(t *testing.T) {
 		conf, _ := config.NewConfig(map[string]any{
-			"genType":    "unknown",
+			"streamType": "unknown",
 			"total":      100,
 			"distinct":   10,
 			"bufferSize": 100,
@@ -55,7 +55,7 @@ func TestNewStreamGenerator(t *testing.T) {
 func TestStreamGenerate(t *testing.T) {
 	t.Run("incremental", func(t *testing.T) {
 		conf, _ := config.NewConfig(map[string]any{
-			"genType":    "incremental",
+			"streamType": "incremental",
 			"total":      10,
 			"distinct":   5,
 			"bufferSize": 10,
@@ -80,7 +80,7 @@ func TestStreamGenerate(t *testing.T) {
 
 	t.Run("Random", func(t *testing.T) {
 		conf, _ := config.NewConfig(map[string]any{
-			"genType":    "random",
+			"streamType": "random",
 			"total":      10,
 			"distinct":   5,
 			"randomMin":  10,

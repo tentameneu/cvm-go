@@ -44,12 +44,12 @@ func (random *randomStreamGenerator) Generate() []int {
 }
 
 func NewStreamGenerator(conf *config.Config) (StreamGenerator, error) {
-	switch conf.GetGenType() {
+	switch conf.GetStreamType() {
 	case "incremental":
 		return &incrementalStreamGenerator{total: conf.GetTotal(), distinct: conf.GetDistinct()}, nil
 	case "random":
 		return &randomStreamGenerator{total: conf.GetTotal(), distinct: conf.GetDistinct(), min: conf.GetRandomMin(), max: conf.GetRandomMax()}, nil
 	default:
-		return nil, fmt.Errorf("unknown generator type '%s'", conf.GetGenType())
+		return nil, fmt.Errorf("unknown generator type '%s'", conf.GetStreamType())
 	}
 }
