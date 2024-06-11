@@ -6,6 +6,8 @@ type Config struct {
 	genType    string
 	total      int
 	distinct   int
+	randomMin  int
+	randomMax  int
 	bufferSize int
 }
 
@@ -40,7 +42,7 @@ func NewConfig(params map[string]any) (*Config, error) {
 
 	bufferSize, ok := params["bufferSize"].(int)
 	if !ok {
-		return nil, newValidationError("bufferSize", "must be an integer")
+		return nil, newValidationError("buffer-size", "must be an integer")
 	}
 
 	if total <= 0 {
@@ -52,11 +54,50 @@ func NewConfig(params map[string]any) (*Config, error) {
 	}
 
 	if bufferSize <= 0 {
-		return nil, newValidationError("bufferSize", "must be a positive integer")
+		return nil, newValidationError("buffer-size", "must be a positive integer")
 	}
 
 	if total < distinct {
 		return nil, newValidationError("total < distinct", "total number of elements can't be smaller than distinct number of elements")
+	}
+
+	if genType == "random" {
+		randomMin, ok := params["randomMin"].(int)
+		if !ok {
+			return nil, newValidationError("random-min", "must be an integer")
+		}
+
+		randomMax, ok := params["randomMax"].(int)
+		if !ok {
+			return nil, newValidationError("random-max", "must be an integer")
+		}
+
+		if randomMin < 0 {
+			return nil, newValidationError("random-min", "must be a positive integer or 0")
+		}
+
+		if randomMax < 0 {
+			return nil, newValidationError("random-max", "must be a positive integer")
+		}
+
+		if randomMax < randomMin {
+			return nil, newValidationError("random-max < random-min", "random-max can't be smaller than random-min")
+		}
+
+		if randomMax-randomMin < distinct {
+			return nil, newValidationError("random-max - random-min < distinct", "(random-max - random-min) can't be smaller than distinct number of elements")
+		}
+
+		conf := &Config{
+			genType:    genType,
+			total:      total,
+			distinct:   distinct,
+			randomMin:  randomMin,
+			randomMax:  randomMax,
+			bufferSize: bufferSize,
+		}
+
+		return conf, nil
 	}
 
 	conf := &Config{
@@ -79,6 +120,14 @@ func (conf *Config) GetTotal() int {
 
 func (conf *Config) GetDistinct() int {
 	return conf.distinct
+}
+
+func (conf *Config) GetRandomMin() int {
+	return conf.randomMin
+}
+
+func (conf *Config) GetRandomMax() int {
+	return conf.randomMax
 }
 
 func (conf *Config) GetBufferSize() int {

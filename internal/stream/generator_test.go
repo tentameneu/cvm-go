@@ -8,9 +8,9 @@ import (
 )
 
 func TestNewStreamGenerator(t *testing.T) {
-	t.Run("Repeating", func(t *testing.T) {
+	t.Run("incremental", func(t *testing.T) {
 		conf, _ := config.NewConfig(map[string]any{
-			"genType":    "repeating",
+			"genType":    "incremental",
 			"total":      100,
 			"distinct":   10,
 			"bufferSize": 100,
@@ -18,6 +18,23 @@ func TestNewStreamGenerator(t *testing.T) {
 		generator, err := NewStreamGenerator(conf)
 
 		assert.NotNil(t, generator)
+		assert.IsType(t, &incrementalStreamGenerator{}, generator)
+		assert.Nil(t, err)
+	})
+
+	t.Run("Random", func(t *testing.T) {
+		conf, _ := config.NewConfig(map[string]any{
+			"genType":    "random",
+			"total":      100,
+			"distinct":   10,
+			"randomMin":  100,
+			"randomMax":  1000000,
+			"bufferSize": 100,
+		})
+		generator, err := NewStreamGenerator(conf)
+
+		assert.NotNil(t, generator)
+		assert.IsType(t, &randomStreamGenerator{}, generator)
 		assert.Nil(t, err)
 	})
 
@@ -36,9 +53,9 @@ func TestNewStreamGenerator(t *testing.T) {
 }
 
 func TestStreamGenerate(t *testing.T) {
-	t.Run("Repeating", func(t *testing.T) {
+	t.Run("incremental", func(t *testing.T) {
 		conf, _ := config.NewConfig(map[string]any{
-			"genType":    "repeating",
+			"genType":    "incremental",
 			"total":      10,
 			"distinct":   5,
 			"bufferSize": 10,
@@ -59,5 +76,32 @@ func TestStreamGenerate(t *testing.T) {
 		assert.Equal(t, 2, stream[7])
 		assert.Equal(t, 3, stream[8])
 		assert.Equal(t, 4, stream[9])
+	})
+
+	t.Run("Random", func(t *testing.T) {
+		conf, _ := config.NewConfig(map[string]any{
+			"genType":    "random",
+			"total":      10,
+			"distinct":   5,
+			"randomMin":  10,
+			"randomMax":  25,
+			"bufferSize": 10,
+		})
+		generator, err := NewStreamGenerator(conf)
+		assert.NotNil(t, generator)
+		assert.Nil(t, err)
+
+		stream := generator.Generate()
+		assert.Equal(t, 10, len(stream))
+		assert.Condition(t, func() (success bool) { return conf.GetRandomMin() <= stream[0] && stream[0] <= conf.GetRandomMax() })
+		assert.Condition(t, func() (success bool) { return conf.GetRandomMin() <= stream[1] && stream[1] <= conf.GetRandomMax() })
+		assert.Condition(t, func() (success bool) { return conf.GetRandomMin() <= stream[2] && stream[2] <= conf.GetRandomMax() })
+		assert.Condition(t, func() (success bool) { return conf.GetRandomMin() <= stream[3] && stream[3] <= conf.GetRandomMax() })
+		assert.Condition(t, func() (success bool) { return conf.GetRandomMin() <= stream[4] && stream[4] <= conf.GetRandomMax() })
+		assert.Equal(t, stream[0], stream[5])
+		assert.Equal(t, stream[1], stream[6])
+		assert.Equal(t, stream[2], stream[7])
+		assert.Equal(t, stream[3], stream[8])
+		assert.Equal(t, stream[4], stream[9])
 	})
 }

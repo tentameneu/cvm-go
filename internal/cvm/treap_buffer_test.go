@@ -11,9 +11,9 @@ import (
 	"github.com/tentameneu/cvm-go/internal/stream"
 )
 
-func newTestRepeatingStream(total, distinct int) []int {
+func newTestIncrementalStream(total, distinct int) []int {
 	conf, _ := config.NewConfig(map[string]any{
-		"genType":    "repeating",
+		"genType":    "incremental",
 		"total":      total,
 		"distinct":   distinct,
 		"bufferSize": total,
@@ -127,7 +127,7 @@ func BenchmarkInsert(b *testing.B) {
 	lengths := []int{1_000, 10_000, 100_000, 1_000_000}
 	for _, length := range lengths {
 		b.Run(fmt.Sprintf("%d", length), func(b *testing.B) {
-			stream := newTestRepeatingStream(length, length)
+			stream := newTestIncrementalStream(length, length)
 			buffer := newTreapBuffer(length)
 			b.ResetTimer()
 			for _, element := range stream {
@@ -214,7 +214,7 @@ func BenchmarkInsertOverwrite(b *testing.B) {
 	lengths := []int{1_000, 10_000, 100_000, 1_000_000}
 	for _, length := range lengths {
 		b.Run(fmt.Sprintf("%d", length), func(b *testing.B) {
-			stream := newTestRepeatingStream(length, length/100)
+			stream := newTestIncrementalStream(length, length/100)
 			buffer := newTreapBuffer(length)
 			for i := 0; i < length/100; i++ {
 				buffer.insert(newNode(stream[i], rand.Float64()))
@@ -323,7 +323,7 @@ func BenchmarkContains(b *testing.B) {
 	lengths := []int{1_000, 10_000, 100_000, 1_000_000}
 	for _, length := range lengths {
 		b.Run(fmt.Sprintf("%d", length), func(b *testing.B) {
-			stream := newTestRepeatingStream(length, length-1)
+			stream := newTestIncrementalStream(length, length-1)
 			buffer := newTreapBuffer(length)
 			for i := 0; i < length; i++ {
 				buffer.insert(newNode(stream[i], rand.Float64()))

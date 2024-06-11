@@ -3,16 +3,17 @@ package cli
 import (
 	"flag"
 	"fmt"
-	"os"
 
 	"github.com/tentameneu/cvm-go/internal/config"
 	"github.com/tentameneu/cvm-go/internal/cvm"
 	"github.com/tentameneu/cvm-go/internal/stream"
 )
 
-var genType = flag.String("gen-type", "repeating", "how to generate test stream of elements. valid values are: [repeating]")
+var genType = flag.String("gen-type", "incremental", "how to generate test stream of elements. valid values are: [incremental, random]")
 var total = flag.Int("total", 100_000_000, "total number of elements in generated test stream")
 var distinct = flag.Int("distinct", 5_000_000, "number of distincts elements in generated test stream")
+var randomMin = flag.Int("random-min", 0, "used in random stream generator - generates values in range [random-min, random-max]")
+var randomMax = flag.Int("random-max", 10_000_000, "used in random stream generator - generates values in range [random-min, random-max]")
 var bufferSize = flag.Int("buffer-size", 10_000, "number of elements that can be stored in buffer while processing stream")
 
 var generateConfigParams = func() map[string]any {
@@ -20,6 +21,8 @@ var generateConfigParams = func() map[string]any {
 		"genType":    *genType,
 		"total":      *total,
 		"distinct":   *distinct,
+		"randomMin":  *randomMin,
+		"randomMax":  *randomMax,
 		"bufferSize": *bufferSize,
 	}
 }
@@ -36,18 +39,6 @@ func processArgs() (*cvm.CVMRunner, error) {
 		return nil, err
 	}
 
-	switch conf.GetGenType() {
-	case "repeating":
-		return createRepeatingStreamRunner(conf)
-	default:
-		fmt.Fprintf(os.Stderr, "Unknown stream generator type '%s'\n\n", conf.GetGenType())
-		flag.PrintDefaults()
-		os.Exit(1)
-		return nil, nil
-	}
-}
-
-func createRepeatingStreamRunner(conf *config.Config) (*cvm.CVMRunner, error) {
 	streamGenerator, err := stream.NewStreamGenerator(conf)
 	if err != nil {
 		return nil, err
