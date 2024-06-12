@@ -254,17 +254,21 @@ func TestNewConfig(t *testing.T) {
 
 func TestConfigGetters(t *testing.T) {
 	conf, err := NewConfig(map[string]any{
-		"streamType": "incremental",
+		"streamType": "random",
 		"total":      100,
 		"distinct":   50,
+		"randomMin":  100,
+		"randomMax":  1_000_000,
 		"bufferSize": 10,
 		"logLevel":   "info",
 	})
 
 	assert.Nil(t, err)
-	assert.Equal(t, "incremental", conf.GetStreamType())
+	assert.Equal(t, "random", conf.GetStreamType())
 	assert.Equal(t, 100, conf.GetTotal())
 	assert.Equal(t, 50, conf.GetDistinct())
+	assert.Equal(t, 100, conf.GetRandomMin())
+	assert.Equal(t, 1_000_000, conf.GetRandomMax())
 	assert.Equal(t, 10, conf.GetBufferSize())
 	assert.Equal(t, "info", conf.GetLogLevel())
 }
