@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+const LevelDeep = slog.Level(-8)
+
 type slogHandler struct {
 	handler slog.Handler
 	writer  io.Writer
@@ -34,7 +36,12 @@ func (slogHndl slogHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 func (slogHndl slogHandler) Handle(ctx context.Context, record slog.Record) error {
 	formattedTime := record.Time.Format("15:04:05.000")
 
-	strs := []string{formattedTime, "||", record.Level.String(), "||", record.Message}
+	level := record.Level.String()
+	if record.Level == LevelDeep {
+		level = "DEEP"
+	}
+
+	strs := []string{formattedTime, "||", level, "||", record.Message}
 
 	if record.NumAttrs() != 0 {
 		record.Attrs(func(a slog.Attr) bool {

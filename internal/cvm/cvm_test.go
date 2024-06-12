@@ -92,7 +92,28 @@ func TestRun(t *testing.T) {
 			assert.Regexp(t, `^\d{2}:\d{2}:\d{2}.\d{3} \|\| DEBUG \|\| Starting loop 9\/10 p=1|0\.\d+ u=0\.\d+ Root=\<Value: \d+, Priority: 0\.\d+\>$`, lines[9])
 			assert.Regexp(t, `^\d{2}:\d{2}:\d{2}.\d{3} \|\| DEBUG \|\| Starting loop 10\/10 p=1|0\.\d+ u=0\.\d+ Root=\<Value: \d+, Priority: 0\.\d+\>$`, lines[10])
 			assert.Regexp(t, `^\d{2}:\d{2}:\d{2}.\d{3} \|\| INFO \|\| Done estimating number of distinct elements\. N=\d+$`, lines[11])
-			assert.Regexp(t, `^\d{2}:\d{2}:\d{2}.\d{3} \|\| INFO \|\| Buffer status: Size=\d+ Root=\<Value: \d+, Priority: 0\.\d+>$`, lines[12])
+			assert.Regexp(t, `^\d{2}:\d{2}:\d{2}.\d{3} \|\| INFO \|\| Buffer status: Size=\d+ Root=\<Value: \d+, Priority: 0\.\d+\>$`, lines[12])
+		})
+
+		t.Run("Deep", func(t *testing.T) {
+			conf, _ := config.NewConfig(map[string]any{
+				"streamType": "incremental",
+				"total":      5,
+				"distinct":   5,
+				"bufferSize": 5,
+				"logLevel":   "deep",
+			})
+			writerBuffer := new(bytes.Buffer)
+			logging.InitializeLogger(writerBuffer, conf)
+			runner := newTestStreamRunner(conf)
+			runner.Run()
+
+			assert.Regexp(t, `\d{2}:\d{2}:\d{2}.\d{3} \|\| INFO \|\| Starting CVM Algorithm\.\.\.`, writerBuffer.String())
+			assert.Regexp(t, `\d{2}:\d{2}:\d{2}.\d{3} \|\| DEBUG \|\| Starting loop 1\/5 p=1 u=0\.\d+ Root=nil`, writerBuffer.String())
+			assert.Regexp(t, `\d{2}:\d{2}:\d{2}.\d{3} \|\| DEEP \|\| Deleting node value=0`, writerBuffer.String())
+			assert.Regexp(t, `\d{2}:\d{2}:\d{2}.\d{3} \|\| DEEP \|\| Inserting node node=\<Value: \d+, Priority: 0\.\d+\>`, writerBuffer.String())
+			assert.Regexp(t, `\d{2}:\d{2}:\d{2}.\d{3} \|\| INFO \|\| Done estimating number of distinct elements\. N=\d+`, writerBuffer.String())
+			assert.Regexp(t, `\d{2}:\d{2}:\d{2}.\d{3} \|\| INFO \|\| Buffer status: Size=\d+ Root=\<Value: \d+, Priority: 0\.\d+\>`, writerBuffer.String())
 		})
 	})
 }

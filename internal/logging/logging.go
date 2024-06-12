@@ -1,6 +1,7 @@
 package logging
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"log/slog"
@@ -19,6 +20,8 @@ func InitializeLogger(writer io.Writer, conf *config.Config) error {
 			level = slog.LevelInfo
 		case "debug":
 			level = slog.LevelDebug
+		case "deep":
+			level = LevelDeep
 		default:
 			return fmt.Errorf("invalid logging level '%s'", conf.GetLogLevel())
 		}
@@ -38,4 +41,8 @@ func InitializeLogger(writer io.Writer, conf *config.Config) error {
 
 func Logger() *slog.Logger {
 	return logger
+}
+
+func LogDeep(msg string, args ...any) {
+	logger.Log(context.Background(), LevelDeep, msg, args...)
 }

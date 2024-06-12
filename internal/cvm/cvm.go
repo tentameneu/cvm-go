@@ -26,9 +26,9 @@ func (runner *CVMRunner) Run() int {
 
 	p, m := 1.0, len(runner.stream)
 	for i, a := range runner.stream {
-		runner.buffer.delete(a)
 		u := rand.Float64()
 		log().Debug(fmt.Sprintf("Starting loop %d/%d", i+1, m), "p", p, "u", u, "Root", runner.rootString())
+		runner.buffer.delete(a)
 
 		if u >= p {
 			continue
@@ -58,8 +58,5 @@ func (runner *CVMRunner) Run() int {
 }
 
 func (runner *CVMRunner) rootString() string {
-	if runner.buffer.GetRoot() == nil {
-		return "nil"
-	}
-	return fmt.Sprintf("<Value: %d, Priority: %f>", runner.buffer.GetRoot().value, runner.buffer.GetRoot().priority)
+	return nodeString(runner.buffer.GetRoot())
 }
