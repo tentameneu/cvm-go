@@ -1,19 +1,22 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/tentameneu/cvm-go/internal/cli"
+	"github.com/tentameneu/cvm-go/internal/logging"
 )
 
+var log = logging.Logger
+
 func main() {
+	logging.InitializeLogger(os.Stdout)
+
 	runner, err := cli.Parse()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err.Error())
+		log().Error("Error while parsing CLI arguments", "err", err.Error())
 		os.Exit(3)
 	}
-	n := runner.Run()
-	runner.PrintBufferBasicInfo(os.Stdout)
-	fmt.Printf("Estimated number of distinct elements: %d\n", n)
+
+	runner.Run()
 }

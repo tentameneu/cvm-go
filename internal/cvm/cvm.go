@@ -1,9 +1,13 @@
 package cvm
 
 import (
-	"io"
+	"fmt"
 	"math/rand"
+
+	"github.com/tentameneu/cvm-go/internal/logging"
 )
+
+var log = logging.Logger
 
 type CVMRunner struct {
 	stream []int
@@ -17,11 +21,9 @@ func NewCVMRunner(stream []int, bufferSize int) *CVMRunner {
 	}
 }
 
-func (runner *CVMRunner) PrintBufferBasicInfo(writer io.Writer) {
-	runner.buffer.printBasicInfo(writer)
-}
-
 func (runner *CVMRunner) Run() int {
+	log().Info("Starting CVM Algorithm...")
+
 	p := 1.0
 	for _, a := range runner.stream {
 		runner.buffer.delete(a)
@@ -41,5 +43,14 @@ func (runner *CVMRunner) Run() int {
 			runner.buffer.insert(newNode(a, u))
 		}
 	}
-	return int(float64(runner.buffer.currentSize) / p)
+	n := int(float64(runner.buffer.currentSize) / p)
+
+	log().Info("Done estimating number of distinct elements.", "N", n)
+	log().Info(
+		"Buffer status:",
+		"Size", runner.buffer.GetCurrentSize(),
+		"Root", fmt.Sprintf("<Value: %d, Priority: %f>", runner.buffer.GetRoot().value, runner.buffer.GetRoot().priority),
+	)
+
+	return n
 }

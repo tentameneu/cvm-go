@@ -35,6 +35,14 @@ func newTreapBuffer(maxSize int) *treapBuffer {
 	}
 }
 
+func (tb *treapBuffer) GetRoot() *node {
+	return tb.root
+}
+
+func (tb *treapBuffer) GetCurrentSize() int {
+	return tb.currentSize
+}
+
 func rightRotate(node *node) *node {
 	pivot := node.left
 	temp := pivot.right
