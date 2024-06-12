@@ -9,6 +9,7 @@ type Config struct {
 	randomMin  int
 	randomMax  int
 	bufferSize int
+	logLevel   string
 }
 
 type ValidationError struct {
@@ -45,6 +46,11 @@ func NewConfig(params map[string]any) (*Config, error) {
 		return nil, newValidationError("buffer-size", "must be an integer")
 	}
 
+	logLevel, ok := params["logLevel"].(string)
+	if !ok {
+		return nil, newValidationError("log-level", "must be a string")
+	}
+
 	if total <= 0 {
 		return nil, newValidationError("total", "must be a positive integer")
 	}
@@ -59,6 +65,14 @@ func NewConfig(params map[string]any) (*Config, error) {
 
 	if total < distinct {
 		return nil, newValidationError("total < distinct", "total number of elements can't be smaller than distinct number of elements")
+	}
+
+	conf := &Config{
+		streamType: streamType,
+		total:      total,
+		distinct:   distinct,
+		bufferSize: bufferSize,
+		logLevel:   logLevel,
 	}
 
 	if streamType == "random" {
@@ -88,23 +102,8 @@ func NewConfig(params map[string]any) (*Config, error) {
 			return nil, newValidationError("random-max - random-min < distinct", "(random-max - random-min) can't be smaller than distinct number of elements")
 		}
 
-		conf := &Config{
-			streamType: streamType,
-			total:      total,
-			distinct:   distinct,
-			randomMin:  randomMin,
-			randomMax:  randomMax,
-			bufferSize: bufferSize,
-		}
-
-		return conf, nil
-	}
-
-	conf := &Config{
-		streamType: streamType,
-		total:      total,
-		distinct:   distinct,
-		bufferSize: bufferSize,
+		conf.randomMin = randomMin
+		conf.randomMax = randomMax
 	}
 
 	return conf, nil
@@ -132,4 +131,8 @@ func (conf *Config) GetRandomMax() int {
 
 func (conf *Config) GetBufferSize() int {
 	return conf.bufferSize
+}
+
+func (conf *Config) GetLogLevel() string {
+	return conf.logLevel
 }

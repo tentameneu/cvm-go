@@ -13,6 +13,7 @@ func TestNewConfig(t *testing.T) {
 			"total":      100,
 			"distinct":   50,
 			"bufferSize": 10,
+			"logLevel":   "info",
 		})
 
 		assert.Nil(t, err)
@@ -20,6 +21,7 @@ func TestNewConfig(t *testing.T) {
 		assert.Equal(t, 100, conf.total)
 		assert.Equal(t, 50, conf.distinct)
 		assert.Equal(t, 10, conf.bufferSize)
+		assert.Equal(t, "info", conf.logLevel)
 	})
 
 	t.Run("ValidRandom", func(t *testing.T) {
@@ -30,6 +32,7 @@ func TestNewConfig(t *testing.T) {
 			"randomMin":  0,
 			"randomMax":  1_000_000,
 			"bufferSize": 10,
+			"logLevel":   "info",
 		})
 
 		assert.Nil(t, err)
@@ -47,6 +50,7 @@ func TestNewConfig(t *testing.T) {
 			"total":      100,
 			"distinct":   50,
 			"bufferSize": 10,
+			"logLevel":   "info",
 		})
 
 		assert.Nil(t, conf)
@@ -59,6 +63,7 @@ func TestNewConfig(t *testing.T) {
 			"total":      "100",
 			"distinct":   50,
 			"bufferSize": 10,
+			"logLevel":   "info",
 		})
 
 		assert.Nil(t, conf)
@@ -71,6 +76,7 @@ func TestNewConfig(t *testing.T) {
 			"total":      100,
 			"distinct":   "50",
 			"bufferSize": 10,
+			"logLevel":   "info",
 		})
 
 		assert.Nil(t, conf)
@@ -83,6 +89,7 @@ func TestNewConfig(t *testing.T) {
 			"total":      100,
 			"distinct":   50,
 			"bufferSize": "10",
+			"logLevel":   "info",
 		})
 
 		assert.Nil(t, conf)
@@ -95,6 +102,7 @@ func TestNewConfig(t *testing.T) {
 			"total":      -100,
 			"distinct":   50,
 			"bufferSize": 10,
+			"logLevel":   "info",
 		})
 
 		assert.Nil(t, conf)
@@ -107,6 +115,7 @@ func TestNewConfig(t *testing.T) {
 			"total":      100,
 			"distinct":   -50,
 			"bufferSize": 10,
+			"logLevel":   "info",
 		})
 
 		assert.Nil(t, conf)
@@ -119,6 +128,7 @@ func TestNewConfig(t *testing.T) {
 			"total":      100,
 			"distinct":   50,
 			"bufferSize": -10,
+			"logLevel":   "info",
 		})
 
 		assert.Nil(t, conf)
@@ -131,6 +141,7 @@ func TestNewConfig(t *testing.T) {
 			"total":      100,
 			"distinct":   500,
 			"bufferSize": 10,
+			"logLevel":   "info",
 		})
 
 		assert.Nil(t, conf)
@@ -145,6 +156,7 @@ func TestNewConfig(t *testing.T) {
 			"randomMin":  "100",
 			"randomMax":  1_000_000,
 			"bufferSize": 10,
+			"logLevel":   "info",
 		})
 
 		assert.Nil(t, conf)
@@ -159,6 +171,7 @@ func TestNewConfig(t *testing.T) {
 			"randomMin":  100,
 			"randomMax":  "1_000_000",
 			"bufferSize": 10,
+			"logLevel":   "info",
 		})
 
 		assert.Nil(t, conf)
@@ -173,6 +186,7 @@ func TestNewConfig(t *testing.T) {
 			"randomMin":  -100,
 			"randomMax":  1_000_000,
 			"bufferSize": 10,
+			"logLevel":   "info",
 		})
 
 		assert.Nil(t, conf)
@@ -187,6 +201,7 @@ func TestNewConfig(t *testing.T) {
 			"randomMin":  100,
 			"randomMax":  -1_000_000,
 			"bufferSize": 10,
+			"logLevel":   "info",
 		})
 
 		assert.Nil(t, conf)
@@ -201,6 +216,7 @@ func TestNewConfig(t *testing.T) {
 			"randomMin":  1_000_000,
 			"randomMax":  100,
 			"bufferSize": 10,
+			"logLevel":   "info",
 		})
 
 		assert.Nil(t, conf)
@@ -215,10 +231,24 @@ func TestNewConfig(t *testing.T) {
 			"randomMin":  10,
 			"randomMax":  100,
 			"bufferSize": 10,
+			"logLevel":   "info",
 		})
 
 		assert.Nil(t, conf)
 		assert.EqualError(t, err, "invalid parameter 'random-max - random-min < distinct': (random-max - random-min) can't be smaller than distinct number of elements")
+	})
+
+	t.Run("InvalidLogLevel", func(t *testing.T) {
+		conf, err := NewConfig(map[string]any{
+			"streamType": "incremental",
+			"total":      100,
+			"distinct":   50,
+			"bufferSize": 10,
+			"logLevel":   12345,
+		})
+
+		assert.Nil(t, conf)
+		assert.EqualError(t, err, "invalid parameter 'log-level': must be a string")
 	})
 }
 
@@ -228,6 +258,7 @@ func TestConfigGetters(t *testing.T) {
 		"total":      100,
 		"distinct":   50,
 		"bufferSize": 10,
+		"logLevel":   "info",
 	})
 
 	assert.Nil(t, err)
@@ -235,4 +266,5 @@ func TestConfigGetters(t *testing.T) {
 	assert.Equal(t, 100, conf.GetTotal())
 	assert.Equal(t, 50, conf.GetDistinct())
 	assert.Equal(t, 10, conf.GetBufferSize())
+	assert.Equal(t, "info", conf.GetLogLevel())
 }

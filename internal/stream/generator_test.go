@@ -14,6 +14,7 @@ func TestNewStreamGenerator(t *testing.T) {
 			"total":      100,
 			"distinct":   10,
 			"bufferSize": 100,
+			"logLevel":   "info",
 		})
 		generator, err := NewStreamGenerator(conf)
 
@@ -30,6 +31,7 @@ func TestNewStreamGenerator(t *testing.T) {
 			"randomMin":  100,
 			"randomMax":  1000000,
 			"bufferSize": 100,
+			"logLevel":   "info",
 		})
 		generator, err := NewStreamGenerator(conf)
 
@@ -44,6 +46,7 @@ func TestNewStreamGenerator(t *testing.T) {
 			"total":      100,
 			"distinct":   10,
 			"bufferSize": 100,
+			"logLevel":   "info",
 		})
 		generator, err := NewStreamGenerator(conf)
 
@@ -59,6 +62,7 @@ func TestStreamGenerate(t *testing.T) {
 			"total":      10,
 			"distinct":   5,
 			"bufferSize": 10,
+			"logLevel":   "info",
 		})
 		generator, err := NewStreamGenerator(conf)
 		assert.NotNil(t, generator)
@@ -86,6 +90,7 @@ func TestStreamGenerate(t *testing.T) {
 			"randomMin":  10,
 			"randomMax":  25,
 			"bufferSize": 10,
+			"logLevel":   "info",
 		})
 		generator, err := NewStreamGenerator(conf)
 		assert.NotNil(t, generator)

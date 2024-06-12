@@ -17,6 +17,7 @@ func newTestIncrementalStream(total, distinct int) []int {
 		"total":      total,
 		"distinct":   distinct,
 		"bufferSize": total,
+		"logLevel":   "info",
 	})
 	streamgenerator, _ := stream.NewStreamGenerator(conf)
 	return streamgenerator.Generate()

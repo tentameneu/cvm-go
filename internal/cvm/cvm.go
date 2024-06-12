@@ -24,10 +24,12 @@ func NewCVMRunner(stream []int, bufferSize int) *CVMRunner {
 func (runner *CVMRunner) Run() int {
 	log().Info("Starting CVM Algorithm...")
 
-	p := 1.0
-	for _, a := range runner.stream {
+	p, m := 1.0, len(runner.stream)
+	for i, a := range runner.stream {
 		runner.buffer.delete(a)
 		u := rand.Float64()
+		log().Debug(fmt.Sprintf("Starting loop %d/%d", i+1, m), "p", p, "u", u, "Root", runner.rootString())
+
 		if u >= p {
 			continue
 		}
@@ -49,8 +51,15 @@ func (runner *CVMRunner) Run() int {
 	log().Info(
 		"Buffer status:",
 		"Size", runner.buffer.GetCurrentSize(),
-		"Root", fmt.Sprintf("<Value: %d, Priority: %f>", runner.buffer.GetRoot().value, runner.buffer.GetRoot().priority),
+		"Root", runner.rootString(),
 	)
 
 	return n
+}
+
+func (runner *CVMRunner) rootString() string {
+	if runner.buffer.GetRoot() == nil {
+		return "nil"
+	}
+	return fmt.Sprintf("<Value: %d, Priority: %f>", runner.buffer.GetRoot().value, runner.buffer.GetRoot().priority)
 }

@@ -5,8 +5,6 @@ import (
 	"fmt"
 
 	"github.com/tentameneu/cvm-go/internal/config"
-	"github.com/tentameneu/cvm-go/internal/cvm"
-	"github.com/tentameneu/cvm-go/internal/stream"
 )
 
 var streamType = flag.String("stream-type", "incremental", "how to generate test stream of elements. valid values are: [incremental, random]")
@@ -15,6 +13,7 @@ var distinct = flag.Int("distinct", 5_000_000, "number of distincts elements in 
 var randomMin = flag.Int("random-min", 0, "used in random stream generator - generates values in range [random-min, random-max]")
 var randomMax = flag.Int("random-max", 10_000_000, "used in random stream generator - generates values in range [random-min, random-max]")
 var bufferSize = flag.Int("buffer-size", 10_000, "number of elements that can be stored in buffer while processing stream")
+var logLevel = flag.String("log-level", "info", "logging level. valid values are: [info, debug]")
 
 var generateConfigParams = func() map[string]any {
 	return map[string]any{
@@ -24,26 +23,14 @@ var generateConfigParams = func() map[string]any {
 		"randomMin":  *randomMin,
 		"randomMax":  *randomMax,
 		"bufferSize": *bufferSize,
+		"logLevel":   *logLevel,
 	}
 }
 
-func Parse() (*cvm.CVMRunner, error) {
+func Parse() (*config.Config, error) {
 	flag.Usage = usage
 	flag.Parse()
-	return processArgs()
-}
-
-func processArgs() (*cvm.CVMRunner, error) {
-	conf, err := config.NewConfig(generateConfigParams())
-	if err != nil {
-		return nil, err
-	}
-
-	streamGenerator, err := stream.NewStreamGenerator(conf)
-	if err != nil {
-		return nil, err
-	}
-	return cvm.NewCVMRunner(streamGenerator.Generate(), *bufferSize), nil
+	return config.NewConfig(generateConfigParams())
 }
 
 func usage() {
