@@ -14,7 +14,7 @@ import (
 
 func newTestStreamRunner(conf *config.Config) *CVMRunner {
 	streamGenerator, _ := stream.NewStreamGenerator(conf)
-	return NewCVMRunner(streamGenerator.Generate(), conf.GetBufferSize())
+	return NewCVMRunner(streamGenerator.Generate(), conf)
 }
 
 func TestRun(t *testing.T) {
@@ -62,7 +62,7 @@ func TestRun(t *testing.T) {
 			lines := strings.Split(writerBuffer.String(), "\n")
 
 			assert.Regexp(t, `^\d{2}:\d{2}:\d{2}.\d{3} \|\| INFO \|\| Starting CVM Algorithm\.\.\.$`, lines[0])
-			assert.Regexp(t, `^\d{2}:\d{2}:\d{2}.\d{3} \|\| INFO \|\| Done estimating number of distinct elements\. N=\d+$`, lines[1])
+			assert.Regexp(t, `^\d{2}:\d{2}:\d{2}.\d{3} \|\| INFO \|\| Done estimating number of distinct elements\. N=\d+ precision=1|0\.\d{3}$`, lines[1])
 			assert.Regexp(t, `^\d{2}:\d{2}:\d{2}.\d{3} \|\| INFO \|\| Buffer status: Size=\d+ Root=\<Value: \d+, Priority: 0\.\d+>$`, lines[2])
 		})
 
@@ -91,7 +91,7 @@ func TestRun(t *testing.T) {
 			assert.Regexp(t, `^\d{2}:\d{2}:\d{2}.\d{3} \|\| DEBUG \|\| Starting loop 8\/10 p=1|0\.\d+ u=0\.\d+ Root=\<Value: \d+, Priority: 0\.\d+\>$`, lines[8])
 			assert.Regexp(t, `^\d{2}:\d{2}:\d{2}.\d{3} \|\| DEBUG \|\| Starting loop 9\/10 p=1|0\.\d+ u=0\.\d+ Root=\<Value: \d+, Priority: 0\.\d+\>$`, lines[9])
 			assert.Regexp(t, `^\d{2}:\d{2}:\d{2}.\d{3} \|\| DEBUG \|\| Starting loop 10\/10 p=1|0\.\d+ u=0\.\d+ Root=\<Value: \d+, Priority: 0\.\d+\>$`, lines[10])
-			assert.Regexp(t, `^\d{2}:\d{2}:\d{2}.\d{3} \|\| INFO \|\| Done estimating number of distinct elements\. N=\d+$`, lines[11])
+			assert.Regexp(t, `^\d{2}:\d{2}:\d{2}.\d{3} \|\| INFO \|\| Done estimating number of distinct elements\. N=\d+ precision=1|0\.\d{3}$`, lines[11])
 			assert.Regexp(t, `^\d{2}:\d{2}:\d{2}.\d{3} \|\| INFO \|\| Buffer status: Size=\d+ Root=\<Value: \d+, Priority: 0\.\d+\>$`, lines[12])
 		})
 
@@ -110,9 +110,9 @@ func TestRun(t *testing.T) {
 
 			assert.Regexp(t, `\d{2}:\d{2}:\d{2}.\d{3} \|\| INFO \|\| Starting CVM Algorithm\.\.\.`, writerBuffer.String())
 			assert.Regexp(t, `\d{2}:\d{2}:\d{2}.\d{3} \|\| DEBUG \|\| Starting loop 1\/5 p=1 u=0\.\d+ Root=nil`, writerBuffer.String())
-			assert.Regexp(t, `\d{2}:\d{2}:\d{2}.\d{3} \|\| DEEP \|\| Deleting node value=0`, writerBuffer.String())
-			assert.Regexp(t, `\d{2}:\d{2}:\d{2}.\d{3} \|\| DEEP \|\| Inserting node node=\<Value: \d+, Priority: 0\.\d+\>`, writerBuffer.String())
-			assert.Regexp(t, `\d{2}:\d{2}:\d{2}.\d{3} \|\| INFO \|\| Done estimating number of distinct elements\. N=\d+`, writerBuffer.String())
+			assert.Regexp(t, `\d{2}:\d{2}:\d{2}.\d{3} \|\| DEEP \|\| Deleting next element from buffer a=0`, writerBuffer.String())
+			assert.Regexp(t, `\d{2}:\d{2}:\d{2}.\d{3} \|\| DEEP \|\| |B| < s. Inserting new node a=0 u=0.\d+\>`, writerBuffer.String())
+			assert.Regexp(t, `\d{2}:\d{2}:\d{2}.\d{3} \|\| INFO \|\| Done estimating number of distinct elements\. N=\d+ precision=1|0\.\d{3}`, writerBuffer.String())
 			assert.Regexp(t, `\d{2}:\d{2}:\d{2}.\d{3} \|\| INFO \|\| Buffer status: Size=\d+ Root=\<Value: \d+, Priority: 0\.\d+\>`, writerBuffer.String())
 		})
 	})

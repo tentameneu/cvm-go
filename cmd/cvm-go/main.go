@@ -28,6 +28,6 @@ func main() {
 		os.Exit(4)
 	}
 
-	runner := cvm.NewCVMRunner(streamGenerator.Generate(), conf.GetBufferSize())
+	runner := cvm.NewCVMRunner(streamGenerator.Generate(), conf)
 	runner.Run()
 }

@@ -3,8 +3,6 @@ package cvm
 import (
 	"fmt"
 	"io"
-
-	"github.com/tentameneu/cvm-go/internal/logging"
 )
 
 type treapBuffer struct {
@@ -62,8 +60,6 @@ func leftRotate(node *node) *node {
 }
 
 func (tb *treapBuffer) insert(newNode *node) {
-	logging.LogDeep("Inserting node", "node", nodeString(newNode))
-
 	if tb.contains((newNode.value)) {
 		tb.delete(newNode.value)
 	}
@@ -95,13 +91,10 @@ func insertNode(root, newNode *node) *node {
 }
 
 func (tb *treapBuffer) delete(value int) {
-	logging.LogDeep("Deleting node", "value", value)
-
 	root, deleted := deleteNode(tb.root, value, false)
 	tb.root = root
 	if deleted {
 		tb.currentSize--
-		logging.LogDeep("Node deleted", "value", value)
 	}
 }
 
@@ -152,13 +145,6 @@ func (tb *treapBuffer) contains(value int) bool {
 	}
 
 	return false
-}
-
-func nodeString(node *node) string {
-	if node == nil {
-		return "nil"
-	}
-	return fmt.Sprintf("<Value: %d, Priority: %f>", node.value, node.priority)
 }
 
 func (tb *treapBuffer) printBasicInfo(writer io.Writer) {

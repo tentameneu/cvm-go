@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"fmt"
 	"math/rand"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/tentameneu/cvm-go/internal/config"
+	"github.com/tentameneu/cvm-go/internal/logging"
 	"github.com/tentameneu/cvm-go/internal/stream"
 )
 
@@ -19,6 +21,7 @@ func newTestIncrementalStream(total, distinct int) []int {
 		"bufferSize": total,
 		"logLevel":   "info",
 	})
+	logging.InitializeLogger(os.Stdout, conf)
 	streamgenerator, _ := stream.NewStreamGenerator(conf)
 	return streamgenerator.Generate()
 }
