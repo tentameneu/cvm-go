@@ -20,12 +20,15 @@ func main() {
 		os.Exit(3)
 	}
 
-	logging.InitializeLogger(os.Stdout, conf)
+	if err := logging.InitializeLogger(os.Stdout, conf); err != nil {
+		log().Error("Error while initializing logger", "err", err.Error())
+		os.Exit(4)
+	}
 
 	streamGenerator, err := stream.NewStreamGenerator(conf)
 	if err != nil {
 		log().Error("Error while generating stream", "err", err.Error())
-		os.Exit(4)
+		os.Exit(5)
 	}
 
 	runner := cvm.NewCVMRunner(streamGenerator.Generate(), conf)
