@@ -12,14 +12,15 @@ import (
 
 func TestInitializeLogging(t *testing.T) {
 	t.Run("Info", func(t *testing.T) {
-		conf, _ := config.NewConfig(map[string]any{
+		config.SetConfig(map[string]any{
 			"streamType": "incremental",
 			"total":      10,
 			"distinct":   10,
 			"bufferSize": 10,
 			"logLevel":   "info",
+			"filePath":   "",
 		})
-		err := InitializeLogger(os.Stdout, conf)
+		err := InitializeLogger(os.Stdout)
 		assert.Nil(t, err)
 		assert.True(t, logger.Handler().Enabled(context.Background(), slog.LevelInfo))
 		assert.False(t, logger.Handler().Enabled(context.Background(), slog.LevelDebug))
@@ -27,14 +28,15 @@ func TestInitializeLogging(t *testing.T) {
 	})
 
 	t.Run("Debug", func(t *testing.T) {
-		conf, _ := config.NewConfig(map[string]any{
+		config.SetConfig(map[string]any{
 			"streamType": "incremental",
 			"total":      10,
 			"distinct":   10,
 			"bufferSize": 10,
 			"logLevel":   "debug",
+			"filePath":   "",
 		})
-		err := InitializeLogger(os.Stdout, conf)
+		err := InitializeLogger(os.Stdout)
 		assert.Nil(t, err)
 		assert.True(t, logger.Handler().Enabled(context.Background(), slog.LevelInfo))
 		assert.True(t, logger.Handler().Enabled(context.Background(), slog.LevelDebug))
@@ -42,14 +44,15 @@ func TestInitializeLogging(t *testing.T) {
 	})
 
 	t.Run("Deep", func(t *testing.T) {
-		conf, _ := config.NewConfig(map[string]any{
+		config.SetConfig(map[string]any{
 			"streamType": "incremental",
 			"total":      10,
 			"distinct":   10,
 			"bufferSize": 10,
 			"logLevel":   "deep",
+			"filePath":   "",
 		})
-		err := InitializeLogger(os.Stdout, conf)
+		err := InitializeLogger(os.Stdout)
 		assert.Nil(t, err)
 		assert.True(t, logger.Handler().Enabled(context.Background(), slog.LevelInfo))
 		assert.True(t, logger.Handler().Enabled(context.Background(), slog.LevelDebug))
@@ -57,19 +60,21 @@ func TestInitializeLogging(t *testing.T) {
 	})
 
 	t.Run("InvalidLevel", func(t *testing.T) {
-		conf, _ := config.NewConfig(map[string]any{
+		config.SetConfig(map[string]any{
 			"streamType": "incremental",
 			"total":      10,
 			"distinct":   10,
 			"bufferSize": 10,
 			"logLevel":   "unknown",
+			"filePath":   "",
 		})
-		err := InitializeLogger(os.Stdout, conf)
+		err := InitializeLogger(os.Stdout)
 		assert.EqualError(t, err, "invalid logging level 'unknown'")
 	})
 
 	t.Run("DefaultLevelOnNilConfig", func(t *testing.T) {
-		err := InitializeLogger(os.Stdout, nil)
+		config.Conf = nil
+		err := InitializeLogger(os.Stdout)
 		assert.Nil(t, err)
 		assert.True(t, logger.Handler().Enabled(context.Background(), slog.LevelInfo))
 		assert.False(t, logger.Handler().Enabled(context.Background(), slog.LevelDebug))

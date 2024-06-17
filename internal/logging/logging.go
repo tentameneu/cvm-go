@@ -11,11 +11,11 @@ import (
 
 var logger *slog.Logger
 
-func InitializeLogger(writer io.Writer, conf *config.Config) error {
+func InitializeLogger(writer io.Writer) error {
 	var level slog.Level
 
-	if conf != nil {
-		switch conf.GetLogLevel() {
+	if config.Conf != nil {
+		switch config.LogLevel() {
 		case "info":
 			level = slog.LevelInfo
 		case "debug":
@@ -23,7 +23,7 @@ func InitializeLogger(writer io.Writer, conf *config.Config) error {
 		case "deep":
 			level = LevelDeep
 		default:
-			return fmt.Errorf("invalid logging level '%s'", conf.GetLogLevel())
+			return fmt.Errorf("invalid logging level '%s'", config.LogLevel())
 		}
 	} else {
 		level = slog.LevelInfo

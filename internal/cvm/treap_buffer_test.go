@@ -14,16 +14,17 @@ import (
 )
 
 func newTestIncrementalStream(total, distinct int) []int {
-	conf, _ := config.NewConfig(map[string]any{
+	config.SetConfig(map[string]any{
 		"streamType": "incremental",
 		"total":      total,
 		"distinct":   distinct,
 		"bufferSize": total,
 		"logLevel":   "info",
 	})
-	logging.InitializeLogger(os.Stdout, conf)
-	streamgenerator, _ := stream.NewStreamGenerator(conf)
-	return streamgenerator.Generate()
+	logging.InitializeLogger(os.Stdout)
+	streamGenerator, _ := stream.NewStreamGenerator()
+	stream, _ := streamGenerator.Generate()
+	return stream
 }
 
 func TestNew(t *testing.T) {

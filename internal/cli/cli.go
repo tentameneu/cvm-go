@@ -7,13 +7,14 @@ import (
 	"github.com/tentameneu/cvm-go/internal/config"
 )
 
-var streamType = flag.String("stream-type", "incremental", "how to generate test stream of elements. valid values are: [incremental, random]")
+var streamType = flag.String("stream-type", "incremental", "how to generate test stream of elements. valid values are: [incremental, random, file]")
 var total = flag.Int("total", 100_000_000, "total number of elements in generated test stream")
 var distinct = flag.Int("distinct", 5_000_000, "number of distincts elements in generated test stream")
 var randomMin = flag.Int("random-min", 0, "used in random stream generator - generates values in range [random-min, random-max]")
 var randomMax = flag.Int("random-max", 10_000_000, "used in random stream generator - generates values in range [random-min, random-max]")
 var bufferSize = flag.Int("buffer-size", 10_000, "number of elements that can be stored in buffer while processing stream")
 var logLevel = flag.String("log-level", "info", "logging level. valid values are: [info, debug, deep]")
+var filePath = flag.String("file-path", "./stream", "path to file containing numbers separated by whitespace. used in stream generated from file")
 
 var generateConfigParams = func() map[string]any {
 	return map[string]any{
@@ -24,13 +25,14 @@ var generateConfigParams = func() map[string]any {
 		"randomMax":  *randomMax,
 		"bufferSize": *bufferSize,
 		"logLevel":   *logLevel,
+		"filePath":   *filePath,
 	}
 }
 
-func Parse() (*config.Config, error) {
+func Parse() error {
 	flag.Usage = usage
 	flag.Parse()
-	return config.NewConfig(generateConfigParams())
+	return config.SetConfig(generateConfigParams())
 }
 
 func usage() {

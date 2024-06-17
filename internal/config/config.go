@@ -2,6 +2,8 @@ package config
 
 import "fmt"
 
+var Conf *Config
+
 type Config struct {
 	streamType string
 	total      int
@@ -10,6 +12,7 @@ type Config struct {
 	randomMax  int
 	bufferSize int
 	logLevel   string
+	filePath   string
 }
 
 type ValidationError struct {
@@ -25,114 +28,134 @@ func (ve ValidationError) Error() string {
 	return fmt.Sprintf("invalid parameter '%s': %s", ve.param, ve.msg)
 }
 
-func NewConfig(params map[string]any) (*Config, error) {
+func SetConfig(params map[string]any) error {
 	streamType, ok := params["streamType"].(string)
 	if !ok {
-		return nil, newValidationError("stream-type", "must be a string")
+		return newValidationError("stream-type", "must be a string")
 	}
 
 	total, ok := params["total"].(int)
 	if !ok {
-		return nil, newValidationError("total", "must be an integer")
+		return newValidationError("total", "must be an integer")
 	}
 
 	distinct, ok := params["distinct"].(int)
 	if !ok {
-		return nil, newValidationError("distinct", "must be an integer")
+		return newValidationError("distinct", "must be an integer")
 	}
 
 	bufferSize, ok := params["bufferSize"].(int)
 	if !ok {
-		return nil, newValidationError("buffer-size", "must be an integer")
+		return newValidationError("buffer-size", "must be an integer")
 	}
 
 	logLevel, ok := params["logLevel"].(string)
 	if !ok {
-		return nil, newValidationError("log-level", "must be a string")
+		return newValidationError("log-level", "must be a string")
 	}
 
-	if total <= 0 {
-		return nil, newValidationError("total", "must be a positive integer")
+	filePath, ok := params["filePath"].(string)
+	if !ok {
+		return newValidationError("file-path", "must be a string")
 	}
 
-	if distinct <= 0 {
-		return nil, newValidationError("distinct", "must be a positive integer")
-	}
-
-	if bufferSize <= 0 {
-		return nil, newValidationError("buffer-size", "must be a positive integer")
-	}
-
-	if total < distinct {
-		return nil, newValidationError("total < distinct", "total number of elements can't be smaller than distinct number of elements")
-	}
-
-	conf := &Config{
+	Conf = &Config{
 		streamType: streamType,
 		total:      total,
 		distinct:   distinct,
 		bufferSize: bufferSize,
 		logLevel:   logLevel,
+		filePath:   filePath,
+	}
+
+	if streamType == "file" {
+		return nil
+	}
+
+	if total <= 0 {
+		return newValidationError("total", "must be a positive integer")
+	}
+
+	if distinct <= 0 {
+		return newValidationError("distinct", "must be a positive integer")
+	}
+
+	if bufferSize <= 0 {
+		return newValidationError("buffer-size", "must be a positive integer")
+	}
+
+	if total < distinct {
+		return newValidationError("total < distinct", "total number of elements can't be smaller than distinct number of elements")
 	}
 
 	if streamType == "random" {
 		randomMin, ok := params["randomMin"].(int)
 		if !ok {
-			return nil, newValidationError("random-min", "must be an integer")
+			return newValidationError("random-min", "must be an integer")
 		}
 
 		randomMax, ok := params["randomMax"].(int)
 		if !ok {
-			return nil, newValidationError("random-max", "must be an integer")
+			return newValidationError("random-max", "must be an integer")
 		}
 
 		if randomMin < 0 {
-			return nil, newValidationError("random-min", "must be a positive integer or 0")
+			return newValidationError("random-min", "must be a positive integer or 0")
 		}
 
 		if randomMax < 0 {
-			return nil, newValidationError("random-max", "must be a positive integer")
+			return newValidationError("random-max", "must be a positive integer")
 		}
 
 		if randomMax < randomMin {
-			return nil, newValidationError("random-max < random-min", "random-max can't be smaller than random-min")
+			return newValidationError("random-max < random-min", "random-max can't be smaller than random-min")
 		}
 
 		if randomMax-randomMin < distinct {
-			return nil, newValidationError("random-max - random-min < distinct", "(random-max - random-min) can't be smaller than distinct number of elements")
+			return newValidationError("random-max - random-min < distinct", "(random-max - random-min) can't be smaller than distinct number of elements")
 		}
 
-		conf.randomMin = randomMin
-		conf.randomMax = randomMax
+		Conf.randomMin = randomMin
+		Conf.randomMax = randomMax
 	}
 
-	return conf, nil
+	return nil
 }
 
-func (conf *Config) GetStreamType() string {
-	return conf.streamType
+func StreamType() string {
+	return Conf.streamType
 }
 
-func (conf *Config) GetTotal() int {
-	return conf.total
+func Total() int {
+	return Conf.total
 }
 
-func (conf *Config) GetDistinct() int {
-	return conf.distinct
+func Distinct() int {
+	return Conf.distinct
 }
 
-func (conf *Config) GetRandomMin() int {
-	return conf.randomMin
+func SetDistinct(n int) {
+	if Conf.streamType == "file" {
+		Conf.distinct = n
+	}
 }
 
-func (conf *Config) GetRandomMax() int {
-	return conf.randomMax
+func RandomMin() int {
+	return Conf.randomMin
 }
 
-func (conf *Config) GetBufferSize() int {
-	return conf.bufferSize
+func RandomMax() int {
+	return Conf.randomMax
 }
 
-func (conf *Config) GetLogLevel() string {
-	return conf.logLevel
+func BufferSize() int {
+	return Conf.bufferSize
+}
+
+func LogLevel() string {
+	return Conf.logLevel
+}
+
+func FilePath() string {
+	return Conf.filePath
 }

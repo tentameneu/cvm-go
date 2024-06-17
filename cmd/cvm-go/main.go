@@ -12,25 +12,30 @@ import (
 var log = logging.Logger
 
 func main() {
-	logging.InitializeLogger(os.Stdout, nil)
+	logging.InitializeLogger(os.Stdout)
 
-	conf, err := cli.Parse()
+	err := cli.Parse()
 	if err != nil {
 		log().Error("Error while parsing CLI arguments", "err", err.Error())
 		os.Exit(3)
 	}
 
-	if err := logging.InitializeLogger(os.Stdout, conf); err != nil {
+	if err := logging.InitializeLogger(os.Stdout); err != nil {
 		log().Error("Error while initializing logger", "err", err.Error())
 		os.Exit(4)
 	}
 
-	streamGenerator, err := stream.NewStreamGenerator(conf)
+	streamGenerator, err := stream.NewStreamGenerator()
 	if err != nil {
-		log().Error("Error while generating stream", "err", err.Error())
+		log().Error("Error while creating stream generator", "err", err.Error())
 		os.Exit(5)
 	}
 
-	runner := cvm.NewCVMRunner(streamGenerator.Generate(), conf)
+	stream, err := streamGenerator.Generate()
+	if err != nil {
+		log().Error("Error while generating stream", "err", err.Error())
+		os.Exit(6)
+	}
+	runner := cvm.NewCVMRunner(stream)
 	runner.Run()
 }

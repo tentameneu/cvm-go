@@ -8,7 +8,9 @@ import (
 	"github.com/tentameneu/cvm-go/internal/logging"
 )
 
-var log = logging.Logger
+var (
+	log = logging.Logger
+)
 
 type CVMRunner struct {
 	stream   []int
@@ -16,11 +18,11 @@ type CVMRunner struct {
 	distinct int
 }
 
-func NewCVMRunner(stream []int, conf *config.Config) *CVMRunner {
+func NewCVMRunner(stream []int) *CVMRunner {
 	return &CVMRunner{
 		stream:   stream,
-		buffer:   newTreapBuffer(conf.GetBufferSize()),
-		distinct: conf.GetDistinct(),
+		buffer:   newTreapBuffer(config.BufferSize()),
+		distinct: config.Distinct(),
 	}
 }
 
@@ -60,7 +62,7 @@ func (runner *CVMRunner) Run() int {
 		precision = 1 / precision
 	}
 
-	log().Info("Done estimating number of distinct elements.", "N", n, "precision", fmt.Sprintf("%.3f", precision))
+	log().Info("Done estimating number of distinct elements.", "N", n, "precision", fmt.Sprintf("%.2f%%", precision*100))
 	log().Info(
 		"Buffer status:",
 		"Size", runner.buffer.GetCurrentSize(),

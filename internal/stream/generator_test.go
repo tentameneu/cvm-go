@@ -9,14 +9,15 @@ import (
 
 func TestNewStreamGenerator(t *testing.T) {
 	t.Run("incremental", func(t *testing.T) {
-		conf, _ := config.NewConfig(map[string]any{
+		config.SetConfig(map[string]any{
 			"streamType": "incremental",
 			"total":      100,
 			"distinct":   10,
 			"bufferSize": 100,
 			"logLevel":   "info",
+			"filePath":   "",
 		})
-		generator, err := NewStreamGenerator(conf)
+		generator, err := NewStreamGenerator()
 
 		assert.NotNil(t, generator)
 		assert.IsType(t, &incrementalStreamGenerator{}, generator)
@@ -24,7 +25,7 @@ func TestNewStreamGenerator(t *testing.T) {
 	})
 
 	t.Run("Random", func(t *testing.T) {
-		conf, _ := config.NewConfig(map[string]any{
+		config.SetConfig(map[string]any{
 			"streamType": "random",
 			"total":      100,
 			"distinct":   10,
@@ -32,8 +33,9 @@ func TestNewStreamGenerator(t *testing.T) {
 			"randomMax":  1000000,
 			"bufferSize": 100,
 			"logLevel":   "info",
+			"filePath":   "",
 		})
-		generator, err := NewStreamGenerator(conf)
+		generator, err := NewStreamGenerator()
 
 		assert.NotNil(t, generator)
 		assert.IsType(t, &randomStreamGenerator{}, generator)
@@ -41,14 +43,15 @@ func TestNewStreamGenerator(t *testing.T) {
 	})
 
 	t.Run("Unknown", func(t *testing.T) {
-		conf, _ := config.NewConfig(map[string]any{
+		config.SetConfig(map[string]any{
 			"streamType": "unknown",
 			"total":      100,
 			"distinct":   10,
 			"bufferSize": 100,
 			"logLevel":   "info",
+			"filePath":   "",
 		})
-		generator, err := NewStreamGenerator(conf)
+		generator, err := NewStreamGenerator()
 
 		assert.Nil(t, generator)
 		assert.Error(t, err, ("unknown generator type 'unknown'"))
@@ -57,18 +60,19 @@ func TestNewStreamGenerator(t *testing.T) {
 
 func TestStreamGenerate(t *testing.T) {
 	t.Run("incremental", func(t *testing.T) {
-		conf, _ := config.NewConfig(map[string]any{
+		config.SetConfig(map[string]any{
 			"streamType": "incremental",
 			"total":      10,
 			"distinct":   5,
 			"bufferSize": 10,
 			"logLevel":   "info",
+			"filePath":   "",
 		})
-		generator, err := NewStreamGenerator(conf)
+		generator, err := NewStreamGenerator()
 		assert.NotNil(t, generator)
 		assert.Nil(t, err)
 
-		stream := generator.Generate()
+		stream, _ := generator.Generate()
 		assert.Equal(t, 10, len(stream))
 		assert.Equal(t, 0, stream[0])
 		assert.Equal(t, 1, stream[1])
@@ -83,7 +87,7 @@ func TestStreamGenerate(t *testing.T) {
 	})
 
 	t.Run("Random", func(t *testing.T) {
-		conf, _ := config.NewConfig(map[string]any{
+		config.SetConfig(map[string]any{
 			"streamType": "random",
 			"total":      10,
 			"distinct":   5,
@@ -91,18 +95,19 @@ func TestStreamGenerate(t *testing.T) {
 			"randomMax":  25,
 			"bufferSize": 10,
 			"logLevel":   "info",
+			"filePath":   "",
 		})
-		generator, err := NewStreamGenerator(conf)
+		generator, err := NewStreamGenerator()
 		assert.NotNil(t, generator)
 		assert.Nil(t, err)
 
-		stream := generator.Generate()
+		stream, _ := generator.Generate()
 		assert.Equal(t, 10, len(stream))
-		assert.Condition(t, func() (success bool) { return conf.GetRandomMin() <= stream[0] && stream[0] <= conf.GetRandomMax() })
-		assert.Condition(t, func() (success bool) { return conf.GetRandomMin() <= stream[1] && stream[1] <= conf.GetRandomMax() })
-		assert.Condition(t, func() (success bool) { return conf.GetRandomMin() <= stream[2] && stream[2] <= conf.GetRandomMax() })
-		assert.Condition(t, func() (success bool) { return conf.GetRandomMin() <= stream[3] && stream[3] <= conf.GetRandomMax() })
-		assert.Condition(t, func() (success bool) { return conf.GetRandomMin() <= stream[4] && stream[4] <= conf.GetRandomMax() })
+		assert.Condition(t, func() (success bool) { return config.RandomMin() <= stream[0] && stream[0] <= config.RandomMax() })
+		assert.Condition(t, func() (success bool) { return config.RandomMin() <= stream[1] && stream[1] <= config.RandomMax() })
+		assert.Condition(t, func() (success bool) { return config.RandomMin() <= stream[2] && stream[2] <= config.RandomMax() })
+		assert.Condition(t, func() (success bool) { return config.RandomMin() <= stream[3] && stream[3] <= config.RandomMax() })
+		assert.Condition(t, func() (success bool) { return config.RandomMin() <= stream[4] && stream[4] <= config.RandomMax() })
 		assert.Equal(t, stream[0], stream[5])
 		assert.Equal(t, stream[1], stream[6])
 		assert.Equal(t, stream[2], stream[7])

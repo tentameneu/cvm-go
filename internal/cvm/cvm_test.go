@@ -12,71 +12,76 @@ import (
 	"github.com/tentameneu/cvm-go/internal/stream"
 )
 
-func newTestStreamRunner(conf *config.Config) *CVMRunner {
-	streamGenerator, _ := stream.NewStreamGenerator(conf)
-	return NewCVMRunner(streamGenerator.Generate(), conf)
+func newTestStreamRunner() *CVMRunner {
+	streamGenerator, _ := stream.NewStreamGenerator()
+	stream, _ := streamGenerator.Generate()
+	return NewCVMRunner(stream)
 }
 
 func TestRun(t *testing.T) {
 	t.Run("SmallerBuffer", func(t *testing.T) {
-		conf, _ := config.NewConfig(map[string]any{
+		config.SetConfig(map[string]any{
 			"streamType": "incremental",
 			"total":      1_000_000,
 			"distinct":   10_000,
 			"bufferSize": 1_000,
 			"logLevel":   "info",
+			"filePath":   "",
 		})
-		logging.InitializeLogger(os.Stdout, conf)
-		runner := newTestStreamRunner(conf)
+		logging.InitializeLogger(os.Stdout)
+		runner := newTestStreamRunner()
 		n := runner.Run()
 		assert.InDelta(t, 10_000, n, 1_000)
 	})
 
 	t.Run("ExactBuffer", func(t *testing.T) {
-		conf, _ := config.NewConfig(map[string]any{
+		config.SetConfig(map[string]any{
 			"streamType": "incremental",
 			"total":      1_000_000,
 			"distinct":   10_000,
 			"bufferSize": 10_000,
 			"logLevel":   "info",
+			"filePath":   "",
 		})
-		logging.InitializeLogger(os.Stdout, conf)
-		runner := newTestStreamRunner(conf)
+		logging.InitializeLogger(os.Stdout)
+		runner := newTestStreamRunner()
 		n := runner.Run()
 		assert.Exactly(t, 10_000, n)
 	})
 
 	t.Run("Logging", func(t *testing.T) {
 		t.Run("Info", func(t *testing.T) {
-			conf, _ := config.NewConfig(map[string]any{
+			config.SetConfig(map[string]any{
 				"streamType": "incremental",
 				"total":      50,
 				"distinct":   15,
 				"bufferSize": 10,
 				"logLevel":   "info",
+				"filePath":   "",
 			})
 			writerBuffer := new(bytes.Buffer)
-			logging.InitializeLogger(writerBuffer, conf)
-			runner := newTestStreamRunner(conf)
+			logging.InitializeLogger(writerBuffer)
+			runner := newTestStreamRunner()
 			runner.Run()
 			lines := strings.Split(writerBuffer.String(), "\n")
 
 			assert.Regexp(t, `^\d{2}:\d{2}:\d{2}.\d{3} \|\| INFO \|\| Starting CVM Algorithm\.\.\.$`, lines[0])
-			assert.Regexp(t, `^\d{2}:\d{2}:\d{2}.\d{3} \|\| INFO \|\| Done estimating number of distinct elements\. N=\d+ precision=1|0\.\d{3}$`, lines[1])
+			assert.Regexp(t, `^\d{2}:\d{2}:\d{2}.\d{3} \|\| INFO \|\| Done estimating number of distinct elements\. N=\d+ precision=100|\d+\.\d+\%$`, lines[1])
 			assert.Regexp(t, `^\d{2}:\d{2}:\d{2}.\d{3} \|\| INFO \|\| Buffer status: Size=\d+ Root=\<Value: \d+, Priority: 0\.\d+>$`, lines[2])
 		})
 
 		t.Run("Debug", func(t *testing.T) {
-			conf, _ := config.NewConfig(map[string]any{
+			config.SetConfig(map[string]any{
 				"streamType": "incremental",
 				"total":      10,
 				"distinct":   5,
 				"bufferSize": 5,
 				"logLevel":   "debug",
+				"filePath":   "",
 			})
 			writerBuffer := new(bytes.Buffer)
-			logging.InitializeLogger(writerBuffer, conf)
-			runner := newTestStreamRunner(conf)
+			logging.InitializeLogger(writerBuffer)
+			runner := newTestStreamRunner()
 			runner.Run()
 			lines := strings.Split(writerBuffer.String(), "\n")
 
@@ -96,16 +101,17 @@ func TestRun(t *testing.T) {
 		})
 
 		t.Run("Deep", func(t *testing.T) {
-			conf, _ := config.NewConfig(map[string]any{
+			config.SetConfig(map[string]any{
 				"streamType": "incremental",
 				"total":      5,
 				"distinct":   5,
 				"bufferSize": 5,
 				"logLevel":   "deep",
+				"filePath":   "",
 			})
 			writerBuffer := new(bytes.Buffer)
-			logging.InitializeLogger(writerBuffer, conf)
-			runner := newTestStreamRunner(conf)
+			logging.InitializeLogger(writerBuffer)
+			runner := newTestStreamRunner()
 			runner.Run()
 
 			assert.Regexp(t, `\d{2}:\d{2}:\d{2}.\d{3} \|\| INFO \|\| Starting CVM Algorithm\.\.\.`, writerBuffer.String())
