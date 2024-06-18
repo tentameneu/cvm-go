@@ -14,7 +14,7 @@ var randomMin = flag.Int("random-min", 0, "used in random stream generator - gen
 var randomMax = flag.Int("random-max", 10_000_000, "used in random stream generator - generates values in range [random-min, random-max]")
 var bufferSize = flag.Int("buffer-size", 10_000, "number of elements that can be stored in buffer while processing stream")
 var logLevel = flag.String("log-level", "info", "logging level. valid values are: [info, debug, deep]")
-var filePath = flag.String("file-path", "./stream", "path to file containing numbers separated by whitespace. used in stream generated from file")
+var filePath = flag.String("file-path", "", "path to file containing numbers separated by whitespace. used in stream generated from file")
 
 var generateConfigParams = func() map[string]any {
 	return map[string]any{

@@ -20,6 +20,7 @@ func newTestIncrementalStream(total, distinct int) []int {
 		"distinct":   distinct,
 		"bufferSize": total,
 		"logLevel":   "info",
+		"filePath":   "",
 	})
 	logging.InitializeLogger(os.Stdout)
 	streamGenerator, _ := stream.NewStreamGenerator()
