@@ -13,6 +13,8 @@ import (
 	"github.com/tentameneu/cvm-go/internal/stream"
 )
 
+var intComparator = func(x, y int) int { return x - y }
+
 func newTestIncrementalStream(total, distinct int) []int {
 	config.SetConfig(map[string]any{
 		"streamType": "incremental",
@@ -30,7 +32,7 @@ func newTestIncrementalStream(total, distinct int) []int {
 
 func TestNew(t *testing.T) {
 	t.Run("TreapBuffer", func(t *testing.T) {
-		buffer := newTreapBuffer(10)
+		buffer := newTreapBuffer(10, intComparator)
 		assert.Nil(t, buffer.root)
 		assert.Equal(t, 0, buffer.currentSize)
 		assert.Equal(t, 10, buffer.maxSize)
@@ -46,7 +48,7 @@ func TestNew(t *testing.T) {
 }
 
 func TestInsert(t *testing.T) {
-	buffer := newTreapBuffer(10)
+	buffer := newTreapBuffer(10, intComparator)
 
 	t.Run("OnEmpty", func(t *testing.T) {
 		buffer.insert(newNode(30, 0.200))
@@ -134,7 +136,7 @@ func BenchmarkInsert(b *testing.B) {
 	for _, length := range lengths {
 		b.Run(fmt.Sprintf("%d", length), func(b *testing.B) {
 			stream := newTestIncrementalStream(length, length)
-			buffer := newTreapBuffer(length)
+			buffer := newTreapBuffer(length, intComparator)
 			b.ResetTimer()
 			for _, element := range stream {
 				buffer.insert(newNode(element, rand.Float64()))
@@ -144,7 +146,7 @@ func BenchmarkInsert(b *testing.B) {
 }
 
 func TestInsertOverwrite(t *testing.T) {
-	buffer := newTreapBuffer(10)
+	buffer := newTreapBuffer(10, intComparator)
 	buffer.insert(newNode(30, 0.200))
 	buffer.insert(newNode(40, 0.100))
 	buffer.insert(newNode(20, 0.300))
@@ -221,7 +223,7 @@ func BenchmarkInsertOverwrite(b *testing.B) {
 	for _, length := range lengths {
 		b.Run(fmt.Sprintf("%d", length), func(b *testing.B) {
 			stream := newTestIncrementalStream(length, length/100)
-			buffer := newTreapBuffer(length)
+			buffer := newTreapBuffer(length, intComparator)
 			for i := 0; i < length/100; i++ {
 				buffer.insert(newNode(stream[i], rand.Float64()))
 			}
@@ -234,7 +236,7 @@ func BenchmarkInsertOverwrite(b *testing.B) {
 }
 
 func TestDelete(t *testing.T) {
-	buffer := newTreapBuffer(10)
+	buffer := newTreapBuffer(10, intComparator)
 	buffer.insert(newNode(30, 0.200))
 	buffer.insert(newNode(40, 0.100))
 	buffer.insert(newNode(20, 0.300))
@@ -330,7 +332,7 @@ func BenchmarkContains(b *testing.B) {
 	for _, length := range lengths {
 		b.Run(fmt.Sprintf("%d", length), func(b *testing.B) {
 			stream := newTestIncrementalStream(length, length-1)
-			buffer := newTreapBuffer(length)
+			buffer := newTreapBuffer(length, intComparator)
 			for i := 0; i < length; i++ {
 				buffer.insert(newNode(stream[i], rand.Float64()))
 			}
@@ -344,7 +346,7 @@ func BenchmarkContains(b *testing.B) {
 
 func TestPrintBasicInfo(t *testing.T) {
 	t.Run("Empty", func(t *testing.T) {
-		buffer := newTreapBuffer(1)
+		buffer := newTreapBuffer(1, intComparator)
 		writerBuffer := new(bytes.Buffer)
 		buffer.printBasicInfo(writerBuffer)
 
@@ -355,7 +357,7 @@ Root: <nil>
 	})
 
 	t.Run("SingleNode", func(t *testing.T) {
-		buffer := newTreapBuffer(1)
+		buffer := newTreapBuffer(1, intComparator)
 		buffer.insert(newNode(30, 0.200))
 		writerBuffer := new(bytes.Buffer)
 		buffer.printBasicInfo(writerBuffer)

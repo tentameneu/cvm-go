@@ -21,7 +21,7 @@ type CVMRunner struct {
 func NewCVMRunner(stream []int) *CVMRunner {
 	return &CVMRunner{
 		stream:   stream,
-		buffer:   newTreapBuffer(config.BufferSize()),
+		buffer:   newTreapBuffer(config.BufferSize(), func(x, y int) int { return x - y }),
 		distinct: config.Distinct(),
 	}
 }

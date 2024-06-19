@@ -5,10 +5,13 @@ import (
 	"io"
 )
 
+type comparator func(x, y int) int
+
 type treapBuffer struct {
 	root        *node
 	maxSize     int
 	currentSize int
+	comp        comparator
 }
 
 type node struct {
@@ -27,11 +30,12 @@ func newNode(value int, priority float64) *node {
 	}
 }
 
-func newTreapBuffer(maxSize int) *treapBuffer {
+func newTreapBuffer(maxSize int, comp comparator) *treapBuffer {
 	return &treapBuffer{
 		root:        nil,
 		maxSize:     maxSize,
 		currentSize: 0,
+		comp:        comp,
 	}
 }
 
@@ -64,23 +68,23 @@ func (tb *treapBuffer) insert(newNode *node) {
 		tb.delete(newNode.value)
 	}
 
-	tb.root = insertNode(tb.root, newNode)
+	tb.root = insertNode(tb.root, newNode, tb.comp)
 	tb.currentSize++
 }
 
-func insertNode(root, newNode *node) *node {
+func insertNode(root, newNode *node, comp comparator) *node {
 	if root == nil {
 		return newNode
 	}
 
-	if root.value > newNode.value {
-		root.left = insertNode(root.left, newNode)
+	if comp(root.value, newNode.value) > 0 {
+		root.left = insertNode(root.left, newNode, comp)
 		if root.priority < newNode.priority {
 			return rightRotate(root)
 		}
 		return root
-	} else if root.value < newNode.value {
-		root.right = insertNode(root.right, newNode)
+	} else if comp(root.value, newNode.value) < 0 {
+		root.right = insertNode(root.right, newNode, comp)
 		if root.priority < newNode.priority {
 			return leftRotate(root)
 		}
