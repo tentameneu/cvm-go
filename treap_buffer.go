@@ -5,24 +5,29 @@ import (
 	"io"
 )
 
-type comparator func(x, y int) int
+// Comparator is a function used to compare elements while saving them to a treap buffer.
+// Function should return:
+// return 0 if x == y.
+// return < 0 (negative int) if x < y.
+// return > 0 (positive int) if x > y.
+type Comparator[T any] func(x, y T) int
 
-type treapBuffer struct {
-	root        *node
+type treapBuffer[T any] struct {
+	root        *node[T]
 	maxSize     int
 	currentSize int
-	comp        comparator
+	comparator  Comparator[T]
 }
 
-type node struct {
-	value    int
+type node[T any] struct {
+	value    T
 	priority float64
-	left     *node
-	right    *node
+	left     *node[T]
+	right    *node[T]
 }
 
-func newNode(value int, priority float64) *node {
-	return &node{
+func newNode[T any](value T, priority float64) *node[T] {
+	return &node[T]{
 		value:    value,
 		priority: priority,
 		left:     nil,
@@ -30,24 +35,24 @@ func newNode(value int, priority float64) *node {
 	}
 }
 
-func newTreapBuffer(maxSize int, comp comparator) *treapBuffer {
-	return &treapBuffer{
+func newTreapBuffer[T any](maxSize int, comp Comparator[T]) *treapBuffer[T] {
+	return &treapBuffer[T]{
 		root:        nil,
 		maxSize:     maxSize,
 		currentSize: 0,
-		comp:        comp,
+		comparator:  comp,
 	}
 }
 
-func (tb *treapBuffer) GetRoot() *node {
+func (tb *treapBuffer[T]) GetRoot() *node[T] {
 	return tb.root
 }
 
-func (tb *treapBuffer) GetCurrentSize() int {
+func (tb *treapBuffer[T]) GetCurrentSize() int {
 	return tb.currentSize
 }
 
-func rightRotate(node *node) *node {
+func rightRotate[T any](node *node[T]) *node[T] {
 	pivot := node.left
 	temp := pivot.right
 	pivot.right = node
@@ -55,7 +60,7 @@ func rightRotate(node *node) *node {
 	return pivot
 }
 
-func leftRotate(node *node) *node {
+func leftRotate[T any](node *node[T]) *node[T] {
 	pivot := node.right
 	temp := pivot.left
 	pivot.left = node
@@ -63,16 +68,16 @@ func leftRotate(node *node) *node {
 	return pivot
 }
 
-func (tb *treapBuffer) insert(newNode *node) {
+func (tb *treapBuffer[T]) insert(newNode *node[T]) {
 	if tb.contains((newNode.value)) {
 		tb.delete(newNode.value)
 	}
 
-	tb.root = insertNode(tb.root, newNode, tb.comp)
+	tb.root = insertNode(tb.root, newNode, tb.comparator)
 	tb.currentSize++
 }
 
-func insertNode(root, newNode *node, comp comparator) *node {
+func insertNode[T any](root, newNode *node[T], comp Comparator[T]) *node[T] {
 	if root == nil {
 		return newNode
 	}
@@ -94,25 +99,25 @@ func insertNode(root, newNode *node, comp comparator) *node {
 	return root
 }
 
-func (tb *treapBuffer) delete(value int) {
-	root, deleted := deleteNode(tb.root, value, false)
+func (tb *treapBuffer[T]) delete(value T) {
+	root, deleted := deleteNode(tb.root, value, tb.comparator, false)
 	tb.root = root
 	if deleted {
 		tb.currentSize--
 	}
 }
 
-func deleteNode(root *node, value int, found bool) (*node, bool) {
+func deleteNode[T any](root *node[T], value T, comp Comparator[T], found bool) (*node[T], bool) {
 	if root == nil {
 		return root, found
 	}
 
 	switch {
-	case value < root.value:
-		root.left, found = deleteNode(root.left, value, found)
-	case value > root.value:
-		root.right, found = deleteNode(root.right, value, found)
-	case value == root.value:
+	case comp(value, root.value) < 0:
+		root.left, found = deleteNode(root.left, value, comp, found)
+	case comp(value, root.value) > 0:
+		root.right, found = deleteNode(root.right, value, comp, found)
+	case comp(value, root.value) == 0:
 		switch {
 		case root.left == nil:
 			root = root.right
@@ -121,10 +126,10 @@ func deleteNode(root *node, value int, found bool) (*node, bool) {
 		default:
 			if root.left.priority < root.right.priority {
 				root = leftRotate(root)
-				root.left, _ = deleteNode(root.left, value, found)
+				root.left, _ = deleteNode(root.left, value, comp, found)
 			} else {
 				root = rightRotate(root)
-				root.right, _ = deleteNode(root.right, value, found)
+				root.right, _ = deleteNode(root.right, value, comp, found)
 			}
 		}
 		found = true
@@ -133,15 +138,15 @@ func deleteNode(root *node, value int, found bool) (*node, bool) {
 	return root, found
 }
 
-func (tb *treapBuffer) contains(value int) bool {
+func (tb *treapBuffer[T]) contains(value T) bool {
 	current := tb.root
 
 	for current != nil {
-		if value == current.value {
+		if tb.comparator(value, current.value) == 0 {
 			return true
 		}
 
-		if value < current.value {
+		if tb.comparator(value, current.value) < 0 {
 			current = current.left
 		} else {
 			current = current.right
@@ -151,7 +156,7 @@ func (tb *treapBuffer) contains(value int) bool {
 	return false
 }
 
-func (tb *treapBuffer) printBasicInfo(writer io.Writer) {
+func (tb *treapBuffer[T]) printBasicInfo(writer io.Writer) {
 	fmt.Fprintf(writer, "Size: %d\n", tb.currentSize)
 	fmt.Fprint(writer, "Root: ")
 	if tb.root != nil {
@@ -176,6 +181,6 @@ func (tb *treapBuffer) printBasicInfo(writer io.Writer) {
 // 	}
 // }
 
-func printNode(writer io.Writer, node *node) {
-	fmt.Fprintf(writer, "<Value: %d, Priority: %f>\n", node.value, node.priority)
+func printNode[T any](writer io.Writer, node *node[T]) {
+	fmt.Fprintf(writer, "<Value: %v, Priority: %f>\n", node.value, node.priority)
 }

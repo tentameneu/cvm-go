@@ -4,21 +4,21 @@ import (
 	"math/rand"
 )
 
-type CVM struct {
-	stream     []int
-	buffer     *treapBuffer
+type CVM[T any] struct {
+	stream     []T
+	buffer     *treapBuffer[T]
 	bufferSize int
 }
 
-func NewCVMRunner(stream []int, bufferSize int) *CVM {
-	return &CVM{
+func NewCVMRunner[T any](stream []T, bufferSize int, comparator Comparator[T]) *CVM[T] {
+	return &CVM[T]{
 		stream:     stream,
-		buffer:     newTreapBuffer(bufferSize, func(x, y int) int { return x - y }),
+		buffer:     newTreapBuffer(bufferSize, comparator),
 		bufferSize: bufferSize,
 	}
 }
 
-func (cvm *CVM) Run() int {
+func (cvm *CVM[T]) Run() int {
 	p := 1.0
 	for _, a := range cvm.stream {
 		u := rand.Float64()
