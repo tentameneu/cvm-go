@@ -44,14 +44,6 @@ func newTreapBuffer[T any](maxSize int, comp Comparator[T]) *treapBuffer[T] {
 	}
 }
 
-func (tb *treapBuffer[T]) GetRoot() *node[T] {
-	return tb.root
-}
-
-func (tb *treapBuffer[T]) GetCurrentSize() int {
-	return tb.currentSize
-}
-
 func rightRotate[T any](node *node[T]) *node[T] {
 	pivot := node.left
 	temp := pivot.right
