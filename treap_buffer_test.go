@@ -40,6 +40,30 @@ func newTestIntStream(total, distinct int) []int {
 	return stream
 }
 
+func newTestFloatStream(total, distinct int) []float64 {
+	stream := make([]float64, total)
+	for i := 0; i < total; i++ {
+		stream[i] = float64(i % distinct)
+	}
+	return stream
+}
+
+func newTestStringStream(total, distinct int) []string {
+	stream := make([]string, total)
+	for i := 0; i < total; i++ {
+		stream[i] = fmt.Sprint(i % distinct)
+	}
+	return stream
+}
+
+func newTestStructStream(total, distinct int) []*testStruct {
+	stream := make([]*testStruct, total)
+	for i := 0; i < total; i++ {
+		stream[i] = &testStruct{id: i % distinct, name: fmt.Sprint("Test", i%distinct)}
+	}
+	return stream
+}
+
 func TestNew(t *testing.T) {
 	t.Run("Int", func(t *testing.T) {
 		t.Run("TreapBuffer", func(t *testing.T) {
@@ -436,17 +460,61 @@ func TestInsert(t *testing.T) {
 }
 
 func BenchmarkInsert(b *testing.B) {
-	lengths := []int{1_000, 10_000, 100_000, 1_000_000}
-	for _, length := range lengths {
-		b.Run(fmt.Sprintf("%d", length), func(b *testing.B) {
-			stream := newTestIntStream(length, length)
-			buffer := newTreapBuffer(length, intTestComparator)
-			b.ResetTimer()
-			for _, element := range stream {
-				buffer.insert(newNode(element, rand.Float64()))
-			}
-		})
-	}
+	b.Run("Int", func(b *testing.B) {
+		lengths := []int{1_000, 10_000, 100_000, 1_000_000}
+		for _, length := range lengths {
+			b.Run(fmt.Sprintf("%d", length), func(b *testing.B) {
+				stream := newTestIntStream(length, length)
+				buffer := newTreapBuffer(length, intTestComparator)
+				b.ResetTimer()
+				for _, element := range stream {
+					buffer.insert(newNode(element, rand.Float64()))
+				}
+			})
+		}
+	})
+
+	b.Run("Float", func(b *testing.B) {
+		lengths := []int{1_000, 10_000, 100_000, 1_000_000}
+		for _, length := range lengths {
+			b.Run(fmt.Sprintf("%d", length), func(b *testing.B) {
+				stream := newTestFloatStream(length, length)
+				buffer := newTreapBuffer(length, floatTestComparator)
+				b.ResetTimer()
+				for _, element := range stream {
+					buffer.insert(newNode(element, rand.Float64()))
+				}
+			})
+		}
+	})
+
+	b.Run("String", func(b *testing.B) {
+		lengths := []int{1_000, 10_000, 100_000, 1_000_000}
+		for _, length := range lengths {
+			b.Run(fmt.Sprintf("%d", length), func(b *testing.B) {
+				stream := newTestStringStream(length, length)
+				buffer := newTreapBuffer(length, stringTestComparator)
+				b.ResetTimer()
+				for _, element := range stream {
+					buffer.insert(newNode(element, rand.Float64()))
+				}
+			})
+		}
+	})
+
+	b.Run("Struct", func(b *testing.B) {
+		lengths := []int{1_000, 10_000, 100_000, 1_000_000}
+		for _, length := range lengths {
+			b.Run(fmt.Sprintf("%d", length), func(b *testing.B) {
+				stream := newTestStructStream(length, length)
+				buffer := newTreapBuffer(length, structTestComparator)
+				b.ResetTimer()
+				for _, element := range stream {
+					buffer.insert(newNode(element, rand.Float64()))
+				}
+			})
+		}
+	})
 }
 
 func TestInsertOverwrite(t *testing.T) {
@@ -762,20 +830,73 @@ func TestInsertOverwrite(t *testing.T) {
 }
 
 func BenchmarkInsertOverwrite(b *testing.B) {
-	lengths := []int{1_000, 10_000, 100_000, 1_000_000}
-	for _, length := range lengths {
-		b.Run(fmt.Sprintf("%d", length), func(b *testing.B) {
-			stream := newTestIntStream(length, length/100)
-			buffer := newTreapBuffer(length, intTestComparator)
-			for i := 0; i < length/100; i++ {
-				buffer.insert(newNode(stream[i], rand.Float64()))
-			}
-			b.ResetTimer()
-			for _, element := range stream {
-				buffer.insert(newNode(element, rand.Float64()))
-			}
-		})
-	}
+	b.Run("Int", func(b *testing.B) {
+		lengths := []int{1_000, 10_000, 100_000, 1_000_000}
+		for _, length := range lengths {
+			b.Run(fmt.Sprintf("%d", length), func(b *testing.B) {
+				stream := newTestIntStream(length, length/100)
+				buffer := newTreapBuffer(length, intTestComparator)
+				for i := 0; i < length/100; i++ {
+					buffer.insert(newNode(stream[i], rand.Float64()))
+				}
+				b.ResetTimer()
+				for _, element := range stream {
+					buffer.insert(newNode(element, rand.Float64()))
+				}
+			})
+		}
+	})
+
+	b.Run("Float", func(b *testing.B) {
+		lengths := []int{1_000, 10_000, 100_000, 1_000_000}
+		for _, length := range lengths {
+			b.Run(fmt.Sprintf("%d", length), func(b *testing.B) {
+				stream := newTestFloatStream(length, length/100)
+				buffer := newTreapBuffer(length, floatTestComparator)
+				for i := 0; i < length/100; i++ {
+					buffer.insert(newNode(stream[i], rand.Float64()))
+				}
+				b.ResetTimer()
+				for _, element := range stream {
+					buffer.insert(newNode(element, rand.Float64()))
+				}
+			})
+		}
+	})
+
+	b.Run("String", func(b *testing.B) {
+		lengths := []int{1_000, 10_000, 100_000, 1_000_000}
+		for _, length := range lengths {
+			b.Run(fmt.Sprintf("%d", length), func(b *testing.B) {
+				stream := newTestStringStream(length, length/100)
+				buffer := newTreapBuffer(length, stringTestComparator)
+				for i := 0; i < length/100; i++ {
+					buffer.insert(newNode(stream[i], rand.Float64()))
+				}
+				b.ResetTimer()
+				for _, element := range stream {
+					buffer.insert(newNode(element, rand.Float64()))
+				}
+			})
+		}
+	})
+
+	b.Run("Struct", func(b *testing.B) {
+		lengths := []int{1_000, 10_000, 100_000, 1_000_000}
+		for _, length := range lengths {
+			b.Run(fmt.Sprintf("%d", length), func(b *testing.B) {
+				stream := newTestStructStream(length, length/100)
+				buffer := newTreapBuffer(length, structTestComparator)
+				for i := 0; i < length/100; i++ {
+					buffer.insert(newNode(stream[i], rand.Float64()))
+				}
+				b.ResetTimer()
+				for _, element := range stream {
+					buffer.insert(newNode(element, rand.Float64()))
+				}
+			})
+		}
+	})
 }
 
 func TestDelete(t *testing.T) {
@@ -1167,20 +1288,73 @@ func TestDelete(t *testing.T) {
 }
 
 func BenchmarkContains(b *testing.B) {
-	lengths := []int{1_000, 10_000, 100_000, 1_000_000}
-	for _, length := range lengths {
-		b.Run(fmt.Sprintf("%d", length), func(b *testing.B) {
-			stream := newTestIntStream(length, length-1)
-			buffer := newTreapBuffer(length, intTestComparator)
-			for i := 0; i < length; i++ {
-				buffer.insert(newNode(stream[i], rand.Float64()))
-			}
-			b.ResetTimer()
-			for _, element := range stream {
-				buffer.contains(element)
-			}
-		})
-	}
+	b.Run("Int", func(b *testing.B) {
+		lengths := []int{1_000, 10_000, 100_000, 1_000_000}
+		for _, length := range lengths {
+			b.Run(fmt.Sprintf("%d", length), func(b *testing.B) {
+				stream := newTestIntStream(length, length-1)
+				buffer := newTreapBuffer(length, intTestComparator)
+				for i := 0; i < length; i++ {
+					buffer.insert(newNode(stream[i], rand.Float64()))
+				}
+				b.ResetTimer()
+				for _, element := range stream {
+					buffer.contains(element)
+				}
+			})
+		}
+	})
+
+	b.Run("Float", func(b *testing.B) {
+		lengths := []int{1_000, 10_000, 100_000, 1_000_000}
+		for _, length := range lengths {
+			b.Run(fmt.Sprintf("%d", length), func(b *testing.B) {
+				stream := newTestFloatStream(length, length-1)
+				buffer := newTreapBuffer(length, floatTestComparator)
+				for i := 0; i < length; i++ {
+					buffer.insert(newNode(stream[i], rand.Float64()))
+				}
+				b.ResetTimer()
+				for _, element := range stream {
+					buffer.contains(element)
+				}
+			})
+		}
+	})
+
+	b.Run("String", func(b *testing.B) {
+		lengths := []int{1_000, 10_000, 100_000, 1_000_000}
+		for _, length := range lengths {
+			b.Run(fmt.Sprintf("%d", length), func(b *testing.B) {
+				stream := newTestStringStream(length, length-1)
+				buffer := newTreapBuffer(length, stringTestComparator)
+				for i := 0; i < length; i++ {
+					buffer.insert(newNode(stream[i], rand.Float64()))
+				}
+				b.ResetTimer()
+				for _, element := range stream {
+					buffer.contains(element)
+				}
+			})
+		}
+	})
+
+	b.Run("Struct", func(b *testing.B) {
+		lengths := []int{1_000, 10_000, 100_000, 1_000_000}
+		for _, length := range lengths {
+			b.Run(fmt.Sprintf("%d", length), func(b *testing.B) {
+				stream := newTestStructStream(length, length-1)
+				buffer := newTreapBuffer(length, structTestComparator)
+				for i := 0; i < length; i++ {
+					buffer.insert(newNode(stream[i], rand.Float64()))
+				}
+				b.ResetTimer()
+				for _, element := range stream {
+					buffer.contains(element)
+				}
+			})
+		}
+	})
 }
 
 func TestPrintBasicInfo(t *testing.T) {
