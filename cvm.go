@@ -16,7 +16,7 @@ type CVM[T any] struct {
 // Use comparator to define ordering of the elements.
 func NewCVM[T any](bufferSize int, comparator Comparator[T]) *CVM[T] {
 	return &CVM[T]{
-		buffer:     newTreapBuffer(bufferSize, comparator),
+		buffer:     newTreapBuffer(comparator),
 		bufferSize: bufferSize,
 		total:      0,
 		p:          1.0,
@@ -37,7 +37,7 @@ func (cvm *CVM[T]) Process(value T) int {
 	if u >= cvm.p {
 		return cvm.N()
 	}
-	if cvm.buffer.currentSize < cvm.buffer.maxSize {
+	if cvm.buffer.currentSize < cvm.bufferSize {
 		cvm.buffer.insert(newNode(value, u))
 		return cvm.N()
 	}

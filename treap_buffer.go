@@ -14,7 +14,6 @@ type Comparator[T any] func(x, y T) int
 
 type treapBuffer[T any] struct {
 	root        *node[T]
-	maxSize     int
 	currentSize int
 	comparator  Comparator[T]
 }
@@ -35,10 +34,9 @@ func newNode[T any](value T, priority float64) *node[T] {
 	}
 }
 
-func newTreapBuffer[T any](maxSize int, comp Comparator[T]) *treapBuffer[T] {
+func newTreapBuffer[T any](comp Comparator[T]) *treapBuffer[T] {
 	return &treapBuffer[T]{
 		root:        nil,
-		maxSize:     maxSize,
 		currentSize: 0,
 		comparator:  comp,
 	}
@@ -61,10 +59,7 @@ func leftRotate[T any](node *node[T]) *node[T] {
 }
 
 func (tb *treapBuffer[T]) insert(newNode *node[T]) {
-	if tb.contains((newNode.value)) {
-		tb.delete(newNode.value)
-	}
-
+	tb.delete(newNode.value)
 	tb.root = insertNode(tb.root, newNode, tb.comparator)
 	tb.currentSize++
 }
