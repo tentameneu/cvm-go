@@ -111,7 +111,7 @@ func TestPaperStreams(t *testing.T) {
 			assert.InDelta(t, 50_000, runner.N(), 20_000)
 		})
 
-		t.Run("BufferSize=1000", func(t *testing.T) {
+		t.Run("BufferSize=1_000", func(t *testing.T) {
 			runner := NewCVM(1_000, intTestComparator)
 			for _, element := range newTestIntStream(1_000_000, 50_000) {
 				runner.Process(element)
@@ -119,7 +119,7 @@ func TestPaperStreams(t *testing.T) {
 			assert.InDelta(t, 50_000, runner.N(), 5_000)
 		})
 
-		t.Run("BufferSize=10000", func(t *testing.T) {
+		t.Run("BufferSize=10_000", func(t *testing.T) {
 			runner := NewCVM(10_000, intTestComparator)
 			for _, element := range newTestIntStream(1_000_000, 50_000) {
 				runner.Process(element)
@@ -127,7 +127,7 @@ func TestPaperStreams(t *testing.T) {
 			assert.InDelta(t, 50_000, runner.N(), 1_000)
 		})
 
-		t.Run("BufferSize=100000", func(t *testing.T) {
+		t.Run("BufferSize=100_000", func(t *testing.T) {
 			runner := NewCVM(100_000, intTestComparator)
 			for _, element := range newTestIntStream(1_000_000, 50_000) {
 				runner.Process(element)
@@ -164,7 +164,7 @@ func TestPaperStreams(t *testing.T) {
 			assert.InDelta(t, 50_000, runner.N(), 20_000)
 		})
 
-		t.Run("BufferSize=1000", func(t *testing.T) {
+		t.Run("BufferSize=1_000", func(t *testing.T) {
 			runner := NewCVM(1_000, intTestComparator)
 			for _, element := range newIncrementalDualTestStream(1_000_000, 50_000) {
 				runner.Process(element)
@@ -172,7 +172,7 @@ func TestPaperStreams(t *testing.T) {
 			assert.InDelta(t, 50_000, runner.N(), 5_000)
 		})
 
-		t.Run("BufferSize=10000", func(t *testing.T) {
+		t.Run("BufferSize=10_000", func(t *testing.T) {
 			runner := NewCVM(10_000, intTestComparator)
 			for _, element := range newIncrementalDualTestStream(1_000_000, 50_000) {
 				runner.Process(element)
@@ -180,7 +180,7 @@ func TestPaperStreams(t *testing.T) {
 			assert.InDelta(t, 50_000, runner.N(), 1_000)
 		})
 
-		t.Run("BufferSize=100000", func(t *testing.T) {
+		t.Run("BufferSize=100_000", func(t *testing.T) {
 			runner := NewCVM(100_000, intTestComparator)
 			for _, element := range newIncrementalDualTestStream(1_000_000, 50_000) {
 				runner.Process(element)
@@ -211,7 +211,7 @@ func TestPaperStreams(t *testing.T) {
 			assert.InDelta(t, expected, runner.N(), 200_000)
 		})
 
-		t.Run("BufferSize=1000", func(t *testing.T) {
+		t.Run("BufferSize=1_000", func(t *testing.T) {
 			runner := NewCVM(1_000, intTestComparator)
 			for _, element := range newDisjointedBlocksTestStream() {
 				runner.Process(element)
@@ -219,7 +219,7 @@ func TestPaperStreams(t *testing.T) {
 			assert.InDelta(t, expected, runner.N(), 100_000)
 		})
 
-		t.Run("BufferSize=10000", func(t *testing.T) {
+		t.Run("BufferSize=10_000", func(t *testing.T) {
 			runner := NewCVM(10_000, intTestComparator)
 			for _, element := range newDisjointedBlocksTestStream() {
 				runner.Process(element)
@@ -227,7 +227,7 @@ func TestPaperStreams(t *testing.T) {
 			assert.InDelta(t, expected, runner.N(), 20_000)
 		})
 
-		t.Run("BufferSize=100000", func(t *testing.T) {
+		t.Run("BufferSize=100_000", func(t *testing.T) {
 			runner := NewCVM(100_000, intTestComparator)
 			for _, element := range newDisjointedBlocksTestStream() {
 				runner.Process(element)
@@ -235,7 +235,7 @@ func TestPaperStreams(t *testing.T) {
 			assert.InDelta(t, expected, runner.N(), 5_000)
 		})
 
-		t.Run("BufferSize=1000000", func(t *testing.T) {
+		t.Run("BufferSize=1_000_000", func(t *testing.T) {
 			runner := NewCVM(1000000, intTestComparator)
 			for _, element := range newDisjointedBlocksTestStream() {
 				runner.Process(element)
@@ -266,7 +266,7 @@ func TestPaperStreams(t *testing.T) {
 			assert.InDelta(t, expected, runner.N(), 200_000)
 		})
 
-		t.Run("BufferSize=1000", func(t *testing.T) {
+		t.Run("BufferSize=1_000", func(t *testing.T) {
 			runner := NewCVM(1_000, intTestComparator)
 			for _, element := range newDisjointedBlocksTestStream() {
 				runner.Process(element)
@@ -274,7 +274,7 @@ func TestPaperStreams(t *testing.T) {
 			assert.InDelta(t, expected, runner.N(), 100_000)
 		})
 
-		t.Run("BufferSize=10000", func(t *testing.T) {
+		t.Run("BufferSize=10_000", func(t *testing.T) {
 			runner := NewCVM(10_000, intTestComparator)
 			for _, element := range newDisjointedBlocksTestStream() {
 				runner.Process(element)
@@ -282,7 +282,7 @@ func TestPaperStreams(t *testing.T) {
 			assert.InDelta(t, expected, runner.N(), 20_000)
 		})
 
-		t.Run("BufferSize=100000", func(t *testing.T) {
+		t.Run("BufferSize=100_000", func(t *testing.T) {
 			runner := NewCVM(100_000, intTestComparator)
 			for _, element := range newDisjointedBlocksTestStream() {
 				runner.Process(element)
@@ -290,7 +290,7 @@ func TestPaperStreams(t *testing.T) {
 			assert.InDelta(t, expected, runner.N(), 5_000)
 		})
 
-		t.Run("BufferSize=1000000", func(t *testing.T) {
+		t.Run("BufferSize=1_000_000", func(t *testing.T) {
 			runner := NewCVM(1000000, intTestComparator)
 			for _, element := range newDisjointedBlocksTestStream() {
 				runner.Process(element)
