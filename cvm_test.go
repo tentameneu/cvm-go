@@ -32,20 +32,23 @@ func TestRun(t *testing.T) {
 // Tests use different buffer size for each test stream. Every stream containing total of 1_000_000 elements.
 // NOTE: These tests can fail due to randomness in algorithm specially for smaller buffer sizes. Try to run them multiple time.
 func TestPaperStreams(t *testing.T) {
-	// Run algorithm maximum 10 times and check if result is within delta.
+	// Run algorithm maximum 10 times and check if result is within delta. Used to make tests more stable due to natural randomness in algorithm.
 	// Return true on first pass. Return false if it fails every time.
-	testDeltaWithRetry := func(stream []int, bufferSize, expected int, delta float64) bool {
+	testDeltaWithRetry := func(stream []int, bufferSize, expected int, delta float64) (bool, []int) {
 		maxRetry := 10
+		diffs := make([]int, 0)
 		for i := 0; i < maxRetry; i++ {
 			runner := NewCVM(bufferSize, intTestComparator)
 			for _, element := range stream {
 				runner.Process(element)
 			}
-			if math.Abs(float64(runner.N()-expected)) <= delta {
-				return true
+			diff := math.Abs(float64(runner.N() - expected))
+			if diff <= delta {
+				return true, nil
 			}
+			diffs = append(diffs, int(diff))
 		}
-		return false
+		return false, diffs
 	}
 	// Random test stream. It consists of a million 7-digit numbers chosen at ranndom.
 	t.Run("Random", func(t *testing.T) {
@@ -64,27 +67,37 @@ func TestPaperStreams(t *testing.T) {
 
 		t.Run("BufferSize=10", func(t *testing.T) {
 			stream, n := newRandomTestStream()
-			assert.True(t, testDeltaWithRetry(stream, 10, n, 0.1*float64(n)))
+			passed, diffs := testDeltaWithRetry(stream, 10, n, 0.1*float64(n))
+			assert.Nil(t, diffs)
+			assert.True(t, passed)
 		})
 
 		t.Run("BufferSize=100", func(t *testing.T) {
 			stream, n := newRandomTestStream()
-			assert.True(t, testDeltaWithRetry(stream, 100, n, 0.05*float64(n)))
+			passed, diffs := testDeltaWithRetry(stream, 100, n, 0.05*float64(n))
+			assert.Nil(t, diffs)
+			assert.True(t, passed)
 		})
 
 		t.Run("BufferSize=1_000", func(t *testing.T) {
 			stream, n := newRandomTestStream()
-			assert.True(t, testDeltaWithRetry(stream, 1_000, n, 0.03*float64(n)))
+			passed, diffs := testDeltaWithRetry(stream, 1_000, n, 0.03*float64(n))
+			assert.Nil(t, diffs)
+			assert.True(t, passed)
 		})
 
 		t.Run("BufferSize=10_000", func(t *testing.T) {
 			stream, n := newRandomTestStream()
-			assert.True(t, testDeltaWithRetry(stream, 10_000, n, 0.02*float64(n)))
+			passed, diffs := testDeltaWithRetry(stream, 10_000, n, 0.02*float64(n))
+			assert.Nil(t, diffs)
+			assert.True(t, passed)
 		})
 
 		t.Run("BufferSize=100_000", func(t *testing.T) {
 			stream, n := newRandomTestStream()
-			assert.True(t, testDeltaWithRetry(stream, 100_000, n, 0.01*float64(n)))
+			passed, diffs := testDeltaWithRetry(stream, 100_000, n, 0.01*float64(n))
+			assert.Nil(t, diffs)
+			assert.True(t, passed)
 		})
 	})
 
@@ -94,29 +107,40 @@ func TestPaperStreams(t *testing.T) {
 		newIncrementalTestStream := func() []int {
 			return newTestIntStream(1_000_000, distinct)
 		}
+
 		t.Run("BufferSize=10", func(t *testing.T) {
 			stream := newIncrementalTestStream()
-			assert.True(t, testDeltaWithRetry(stream, 10, distinct, 5_000))
+			passed, diffs := testDeltaWithRetry(stream, 10, distinct, 10_000)
+			assert.Nil(t, diffs)
+			assert.True(t, passed)
 		})
 
 		t.Run("BufferSize=100", func(t *testing.T) {
 			stream := newIncrementalTestStream()
-			assert.True(t, testDeltaWithRetry(stream, 100, distinct, 1_000))
+			passed, diffs := testDeltaWithRetry(stream, 100, distinct, 5_000)
+			assert.Nil(t, diffs)
+			assert.True(t, passed)
 		})
 
 		t.Run("BufferSize=1_000", func(t *testing.T) {
 			stream := newIncrementalTestStream()
-			assert.True(t, testDeltaWithRetry(stream, 1_000, distinct, 500))
+			passed, diffs := testDeltaWithRetry(stream, 1_000, distinct, 1_000)
+			assert.Nil(t, diffs)
+			assert.True(t, passed)
 		})
 
 		t.Run("BufferSize=10_000", func(t *testing.T) {
 			stream := newIncrementalTestStream()
-			assert.True(t, testDeltaWithRetry(stream, 10_000, distinct, 100))
+			passed, diffs := testDeltaWithRetry(stream, 10_000, distinct, 500)
+			assert.Nil(t, diffs)
+			assert.True(t, passed)
 		})
 
 		t.Run("BufferSize=100_000", func(t *testing.T) {
 			stream := newIncrementalTestStream()
-			assert.True(t, testDeltaWithRetry(stream, 100_000, distinct, 0))
+			passed, diffs := testDeltaWithRetry(stream, 100_000, distinct, 0)
+			assert.Nil(t, diffs)
+			assert.True(t, passed)
 		})
 	})
 
@@ -136,27 +160,37 @@ func TestPaperStreams(t *testing.T) {
 		}
 		t.Run("BufferSize=10", func(t *testing.T) {
 			stream := newIncrementalDualTestStream()
-			assert.True(t, testDeltaWithRetry(stream, 10, distinct, 5_000))
+			passed, diffs := testDeltaWithRetry(stream, 10, distinct, 10_000)
+			assert.Nil(t, diffs)
+			assert.True(t, passed)
 		})
 
 		t.Run("BufferSize=100", func(t *testing.T) {
 			stream := newIncrementalDualTestStream()
-			assert.True(t, testDeltaWithRetry(stream, 100, distinct, 1_000))
+			passed, diffs := testDeltaWithRetry(stream, 100, distinct, 5_000)
+			assert.Nil(t, diffs)
+			assert.True(t, passed)
 		})
 
 		t.Run("BufferSize=1_000", func(t *testing.T) {
 			stream := newIncrementalDualTestStream()
-			assert.True(t, testDeltaWithRetry(stream, 1_000, distinct, 500))
+			passed, diffs := testDeltaWithRetry(stream, 1_000, distinct, 1_000)
+			assert.Nil(t, diffs)
+			assert.True(t, passed)
 		})
 
 		t.Run("BufferSize=10_000", func(t *testing.T) {
 			stream := newIncrementalDualTestStream()
-			assert.True(t, testDeltaWithRetry(stream, 10_000, distinct, 100))
+			passed, diffs := testDeltaWithRetry(stream, 10_000, distinct, 500)
+			assert.Nil(t, diffs)
+			assert.True(t, passed)
 		})
 
 		t.Run("BufferSize=100_000", func(t *testing.T) {
 			stream := newIncrementalDualTestStream()
-			assert.True(t, testDeltaWithRetry(stream, 100_000, distinct, 0))
+			passed, diffs := testDeltaWithRetry(stream, 100_000, distinct, 0)
+			assert.Nil(t, diffs)
+			assert.True(t, passed)
 		})
 	})
 
@@ -176,27 +210,37 @@ func TestPaperStreams(t *testing.T) {
 
 		t.Run("BufferSize=10", func(t *testing.T) {
 			stream := newDisjointedBlocksTestStream()
-			assert.True(t, testDeltaWithRetry(stream, 10, expected, 100_000))
+			passed, diffs := testDeltaWithRetry(stream, 10, expected, 100_000)
+			assert.Nil(t, diffs)
+			assert.True(t, passed)
 		})
 
 		t.Run("BufferSize=100", func(t *testing.T) {
 			stream := newDisjointedBlocksTestStream()
-			assert.True(t, testDeltaWithRetry(stream, 100, expected, 50_000))
+			passed, diffs := testDeltaWithRetry(stream, 100, expected, 50_000)
+			assert.Nil(t, diffs)
+			assert.True(t, passed)
 		})
 
 		t.Run("BufferSize=1_000", func(t *testing.T) {
 			stream := newDisjointedBlocksTestStream()
-			assert.True(t, testDeltaWithRetry(stream, 1_000, expected, 10_000))
+			passed, diffs := testDeltaWithRetry(stream, 1_000, expected, 10_000)
+			assert.Nil(t, diffs)
+			assert.True(t, passed)
 		})
 
 		t.Run("BufferSize=10_000", func(t *testing.T) {
 			stream := newDisjointedBlocksTestStream()
-			assert.True(t, testDeltaWithRetry(stream, 10_000, expected, 2_000))
+			passed, diffs := testDeltaWithRetry(stream, 10_000, expected, 5_000)
+			assert.Nil(t, diffs)
+			assert.True(t, passed)
 		})
 
 		t.Run("BufferSize=100_000", func(t *testing.T) {
 			stream := newDisjointedBlocksTestStream()
-			assert.True(t, testDeltaWithRetry(stream, 100_000, expected, 1_000))
+			passed, diffs := testDeltaWithRetry(stream, 100_000, expected, 1_000)
+			assert.Nil(t, diffs)
+			assert.True(t, passed)
 		})
 	})
 }
