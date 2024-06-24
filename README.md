@@ -120,3 +120,39 @@ func main() {
     // 9
 }
 ```
+
+Example of usage for buffer smaller than stream of elements. In this example stream of elemnts has 1_000_000 total elements, of which 50_000 are distinct.
+Buffer can contain only 10_000 elements. CVM algorithm is used to estimate number of distinct elements, it naturally includes randomness, so your result may differ, but it should be close to 50_000.
+
+```go
+import (
+    "fmt"
+
+    "github.com/tentameneu/cvm-go"
+)
+
+type Person struct {
+    ID   int
+    Name string
+}
+
+func main() {
+    total, distinct := 1_000_000, 50_000
+    bufferSize := 10_000
+
+    stream := make([]int, total)
+    for i := 0; i < total; i++ {
+        stream[i] = i % distinct
+    }
+
+    cvmSim := cvm.NewCVM(bufferSize, func(x, y int) int { return x - y })
+
+    for _, element := range stream {
+        cvmSim.Process(element)
+    }
+
+    fmt.Printf("Estimated number of distinct elements is %d\n", cvmSim.N())
+    // Output:
+    // Estimated number of distinct elements is 50161
+}
+```
