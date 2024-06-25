@@ -125,16 +125,13 @@ Example of usage for buffer smaller than stream of elements. In this example str
 Buffer can contain only 10_000 elements. CVM algorithm is used to estimate number of distinct elements, it naturally includes randomness, so your result may differ, but it should be close to 50_000.
 
 ```go
+package main
+
 import (
     "fmt"
 
     "github.com/tentameneu/cvm-go"
 )
-
-type Person struct {
-    ID   int
-    Name string
-}
 
 func main() {
     total, distinct := 1_000_000, 50_000
