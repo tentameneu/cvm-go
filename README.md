@@ -121,7 +121,7 @@ func main() {
 }
 ```
 
-Example of usage for buffer smaller than stream of elements. In this example stream of elemnts has 1_000_000 total elements, of which 50_000 are distinct.
+Example of usage for buffer smaller than stream of elements. In this example stream of elements has 1_000_000 total elements, of which 50_000 are distinct.
 Buffer can contain only 10_000 elements. CVM algorithm is used to estimate number of distinct elements, it naturally includes randomness, so your result may differ, but it should be close to 50_000.
 
 ```go
